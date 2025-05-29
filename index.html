@@ -788,6 +788,54 @@
             margin: 2px;
         }
 
+        /* Moderator Management Styles */
+        .moderator-card {
+            background: white;
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .moderator-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .moderator-info {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .moderator-role {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .role-admin {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .role-moderator {
+            background: #f39c12;
+            color: white;
+        }
+
+        .role-viewer {
+            background: #95a5a6;
+            color: white;
+        }
+
         /* Reservation Popup */
         .reservation-popup {
             position: fixed;
@@ -957,6 +1005,30 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
             z-index: 3000;
+        }
+
+        /* Auto-logout warning */
+        .logout-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f39c12;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 3002;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .logout-warning h4 {
+            margin-bottom: 10px;
+        }
+
+        .logout-warning p {
+            margin-bottom: 15px;
         }
 
         @media (max-width: 768px) {
@@ -1180,6 +1252,17 @@
 
             <!-- Settings Page -->
             <div id="settings" class="page">
+                <!-- Moderator Management -->
+                <div class="settings-section">
+                    <h3>👥 Moderator Management</h3>
+                    <div class="moderator-card">
+                        <button class="btn btn-success" onclick="openModeratorModal()">➕ Add Moderator</button>
+                        <div id="moderatorsContainer">
+                            <!-- Moderators will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Telegram Bot Integration -->
                 <div class="settings-section">
                     <h3>🤖 Telegram Bot Integration</h3>
@@ -1396,6 +1479,44 @@
         </div>
     </div>
 
+    <!-- Moderator Modal -->
+    <div id="moderatorModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModeratorModal()">&times;</span>
+            <h2 id="moderatorModalTitle">Add Moderator</h2>
+            <form id="moderatorForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="moderatorName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="moderatorEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="moderatorUsername" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="moderatorPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Role:</label>
+                    <select id="moderatorRole" required>
+                        <option value="moderator">Moderator</option>
+                        <option value="admin">Admin</option>
+                        <option value="viewer">Viewer</option>
+                    </select>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn" onclick="closeModeratorModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Email Modal -->
     <div id="emailModal" class="modal">
         <div class="modal-content">
@@ -1446,6 +1567,7 @@
         // Application State
         let currentEditingService = null;
         let currentEditingUser = null;
+        let currentEditingModerator = null;
         let currentChatUser = null;
         let currentBotSetting = null;
         let currentBotSettingType = null;
@@ -1457,6 +1579,14 @@
         let autoNotificationsEnabled = false;
         let botSimulationState = 'start';
         let currentBookingData = {};
+        let inactivityTimer = null;
+        let logoutWarningTimer = null;
+        let isLoggedIn = false;
+        let lastActivity = Date.now();
+
+        // Auto-logout configuration (5 minutes = 300000ms)
+        const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+        const WARNING_TIME = 30 * 1000; // 30 seconds warning
 
         // Security: SHA-256 Password Hashing
         function hashPassword(password) {
@@ -1498,13 +1628,114 @@
             }
         };
 
+        // Activity tracking for auto-logout
+        function resetInactivityTimer() {
+            lastActivity = Date.now();
+            
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+            if (logoutWarningTimer) {
+                clearTimeout(logoutWarningTimer);
+                hideLogoutWarning();
+            }
+
+            if (isLoggedIn) {
+                // Set warning timer (4.5 minutes)
+                logoutWarningTimer = setTimeout(() => {
+                    showLogoutWarning();
+                }, INACTIVITY_TIMEOUT - WARNING_TIME);
+
+                // Set logout timer (5 minutes)
+                inactivityTimer = setTimeout(() => {
+                    autoLogout();
+                }, INACTIVITY_TIMEOUT);
+            }
+        }
+
+        function showLogoutWarning() {
+            const warning = document.createElement('div');
+            warning.className = 'logout-warning';
+            warning.id = 'logoutWarning';
+            warning.innerHTML = `
+                <h4>⚠️ Session Timeout Warning</h4>
+                <p>You will be logged out in 30 seconds due to inactivity.</p>
+                <button class="btn btn-success" onclick="extendSession()">Stay Logged In</button>
+            `;
+            document.body.appendChild(warning);
+        }
+
+        function hideLogoutWarning() {
+            const warning = document.getElementById('logoutWarning');
+            if (warning) {
+                warning.remove();
+            }
+        }
+
+        function extendSession() {
+            hideLogoutWarning();
+            resetInactivityTimer();
+            showNotification('Session extended', 'success');
+        }
+
+        function autoLogout() {
+            hideLogoutWarning();
+            logout();
+            showNotification('Logged out due to inactivity', 'warning');
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            if (logoutWarningTimer) clearTimeout(logoutWarningTimer);
+            
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('password').value = '';
+            currentChatUser = null;
+            
+            // Clear session data but keep persistent data
+            storage.remove('currentSession');
+        }
+
+        // Track user activity
+        function trackActivity() {
+            const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+            events.forEach(event => {
+                document.addEventListener(event, resetInactivityTimer, true);
+            });
+        }
+
+        // Session management
+        function saveSession() {
+            if (isLoggedIn) {
+                storage.set('currentSession', [{
+                    loginTime: Date.now(),
+                    lastActivity: lastActivity
+                }]);
+            }
+        }
+
+        function checkExistingSession() {
+            const session = storage.get('currentSession');
+            if (session && session.length > 0) {
+                const sessionData = session[0];
+                const timeSinceLogin = Date.now() - sessionData.loginTime;
+                const timeSinceActivity = Date.now() - sessionData.lastActivity;
+                
+                // If session is less than 5 minutes old and last activity was recent
+                if (timeSinceLogin < INACTIVITY_TIMEOUT && timeSinceActivity < INACTIVITY_TIMEOUT) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // Confirmation Dialog Functions
         function showConfirmationDialog(message, onConfirm, onCancel = null) {
-            // Create overlay
             const overlay = document.createElement('div');
             overlay.className = 'confirmation-overlay';
             
-            // Create dialog
             const dialog = document.createElement('div');
             dialog.className = 'confirmation-dialog';
             dialog.innerHTML = `
@@ -1516,7 +1747,6 @@
                 </div>
             `;
             
-            // Store callbacks
             window.confirmationCallbacks = { onConfirm, onCancel };
             
             document.body.appendChild(overlay);
@@ -1594,7 +1824,7 @@
             }, 3000);
         }
 
-        // Initialize default data
+        // Initialize default data (removed demo users and reservations)
         function initializeData() {
             // Load saved password hash or use default
             const savedPasswordHash = storage.get('adminPasswordHash');
@@ -1605,6 +1835,7 @@
                 storage.set('adminPasswordHash', [adminPassword]);
             }
 
+            // Initialize services with default data only if empty
             if (!storage.get('services').length) {
                 storage.set('services', [
                     { id: 1, name: 'Դասական սանրվածք', description: 'Մասնագիտական սանրվածք բոլոր տեսակի մազերի համար', duration: 30, price: 25.00 },
@@ -1614,39 +1845,18 @@
                 ]);
             }
 
+            // Initialize empty arrays for users and reservations (no demo data)
             if (!storage.get('users').length) {
-                storage.set('users', [
-                    { id: 1, name: 'Davit Yeremyan', phone: '+37488123000', telegramId: '@davyer', email: 'davit@example.com', bonuses: 25.50, status: 'active' },
-                    { id: 2, name: 'Hayk Mnacakanyan', phone: '+37488456000', telegramId: '@haykmnac', email: 'hayk@example.com', bonuses: 15.00, status: 'active' },
-                    { id: 3, name: 'Robert Davtyan', phone: '+37488789000', telegramId: '@robyan', email: 'robert@example.com', bonuses: 40.25, status: 'active' }
-                ]);
+                storage.set('users', []);
             }
 
             if (!storage.get('reservations').length) {
-                storage.set('reservations', [
-                    { 
-                        id: 1, 
-                        userId: 1, 
-                        serviceId: 1, 
-                        date: '2024-01-15', 
-                        time: '10:00', 
-                        status: 'Ընդունված',
-                        notes: 'Խնդրում ենք օգտագործել միայն մկրատ',
-                        userName: 'Karina mkrtchyan',
-                        serviceName: 'Դասական սանրվածք'
-                    },
-                    { 
-                        id: 2, 
-                        userId: 2, 
-                        serviceId: 2, 
-                        date: '2024-01-15', 
-                        time: '14:30', 
-                        status: 'Ընդունված',
-                        notes: '',
-                        userName: 'Artur Gevorgyan',
-                        serviceName: 'Մորուքի կտրում'
-                    }
-                ]);
+                storage.set('reservations', []);
+            }
+
+            // Initialize moderators
+            if (!storage.get('moderators').length) {
+                storage.set('moderators', []);
             }
 
             // Initialize bot settings
@@ -1747,6 +1957,119 @@
                 ]);
             }
         }
+
+        // Moderator Management Functions
+        function loadModerators() {
+            const moderators = storage.get('moderators');
+            const container = document.getElementById('moderatorsContainer');
+            
+            if (moderators.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No Moderators</h3>
+                        <p>No moderators have been added yet.</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = moderators.map(moderator => `
+                    <div class="moderator-item">
+                        <div class="moderator-info">
+                            <strong>${moderator.name}</strong><br>
+                            <small>${moderator.email} | @${moderator.username}</small>
+                            <span class="moderator-role role-${moderator.role}">${moderator.role.toUpperCase()}</span>
+                        </div>
+                        <div class="setting-actions">
+                            <button class="btn btn-warning btn-sm" onclick="editModerator(${moderator.id})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteModerator(${moderator.id})">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function openModeratorModal(moderatorId = null) {
+            currentEditingModerator = moderatorId;
+            const modal = document.getElementById('moderatorModal');
+            const title = document.getElementById('moderatorModalTitle');
+            
+            if (moderatorId) {
+                const moderator = storage.get('moderators').find(m => m.id === moderatorId);
+                title.textContent = 'Edit Moderator';
+                document.getElementById('moderatorName').value = moderator.name;
+                document.getElementById('moderatorEmail').value = moderator.email;
+                document.getElementById('moderatorUsername').value = moderator.username;
+                document.getElementById('moderatorPassword').value = '';
+                document.getElementById('moderatorRole').value = moderator.role;
+            } else {
+                title.textContent = 'Add Moderator';
+                document.getElementById('moderatorForm').reset();
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModeratorModal() {
+            document.getElementById('moderatorModal').style.display = 'none';
+            currentEditingModerator = null;
+        }
+
+        function editModerator(id) {
+            openModeratorModal(id);
+        }
+
+        function confirmDeleteModerator(id) {
+            showConfirmationDialog(
+                'Are you sure you want to delete?',
+                () => deleteModerator(id)
+            );
+        }
+
+        function deleteModerator(id) {
+            let moderators = storage.get('moderators');
+            moderators = moderators.filter(m => m.id !== id);
+            storage.set('moderators', moderators);
+            loadModerators();
+            showNotification('Moderator deleted successfully', 'success');
+        }
+
+        // Moderator Form Handler
+        document.getElementById('moderatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('moderatorName').value;
+            const email = document.getElementById('moderatorEmail').value;
+            const username = document.getElementById('moderatorUsername').value;
+            const password = document.getElementById('moderatorPassword').value;
+            const role = document.getElementById('moderatorRole').value;
+            
+            let moderators = storage.get('moderators');
+            
+            if (currentEditingModerator) {
+                const index = moderators.findIndex(m => m.id === currentEditingModerator);
+                const updatedModerator = { ...moderators[index], name, email, username, role };
+                if (password) {
+                    updatedModerator.password = hashPassword(password);
+                }
+                moderators[index] = updatedModerator;
+                showNotification('Moderator updated successfully', 'success');
+            } else {
+                const newModerator = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    username,
+                    password: hashPassword(password),
+                    role,
+                    createdAt: new Date().toISOString()
+                };
+                moderators.push(newModerator);
+                showNotification('Moderator added successfully', 'success');
+            }
+            
+            storage.set('moderators', moderators);
+            loadModerators();
+            closeModeratorModal();
+        });
 
         // Bot Settings Functions
         function loadBotSettings() {
@@ -2767,10 +3090,13 @@
             
             if (hashedPassword === adminPassword) {
                 resetLoginAttempts();
+                isLoggedIn = true;
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
                 initializeData();
                 loadDashboard();
+                saveSession();
+                resetInactivityTimer();
                 showNotification('Մուտքը հաջողված է', 'success');
             } else {
                 loginAttempts++;
@@ -2788,10 +3114,7 @@
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', function() {
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('adminPanel').style.display = 'none';
-            document.getElementById('password').value = '';
-            currentChatUser = null;
+            logout();
             showNotification('Հաջողությամբ դուրս եք եկել:', 'success');
         });
 
@@ -2849,6 +3172,7 @@
                     break;
                 case 'settings':
                     loadBotSettings();
+                    loadModerators();
                     break;
             }
         }
@@ -2871,10 +3195,10 @@
                 const users = storage.get('users');
                 switch(period) {
                     case 'daily':
-                        filteredCount = Math.max(1, Math.floor(users.length * 0.1));
+                        filteredCount = Math.max(0, Math.floor(users.length * 0.1));
                         break;
                     case 'weekly':
-                        filteredCount = Math.max(2, Math.floor(users.length * 0.3));
+                        filteredCount = Math.max(0, Math.floor(users.length * 0.3));
                         break;
                     case 'monthly':
                         filteredCount = users.length;
@@ -2885,10 +3209,10 @@
                 const reservations = storage.get('reservations');
                 switch(period) {
                     case 'daily':
-                        filteredCount = Math.max(1, Math.floor(reservations.length * 0.2));
+                        filteredCount = Math.max(0, Math.floor(reservations.length * 0.2));
                         break;
                     case 'weekly':
-                        filteredCount = Math.max(2, Math.floor(reservations.length * 0.6));
+                        filteredCount = Math.max(0, Math.floor(reservations.length * 0.6));
                         break;
                     case 'monthly':
                         filteredCount = reservations.length;
@@ -3240,6 +3564,20 @@
                     }
                 }
             });
+
+            // Check for existing session
+            if (checkExistingSession()) {
+                isLoggedIn = true;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                initializeData();
+                loadDashboard();
+                resetInactivityTimer();
+                showNotification('Welcome back!', 'success');
+            }
+
+            // Track user activity
+            trackActivity();
         });
 
         // Close modals when clicking outside
