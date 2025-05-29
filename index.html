@@ -962,6 +962,45 @@
             margin-bottom: 15px;
         }
 
+        /* Inline button styles for Telegram Bot */
+        .inline-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .inline-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+            border: 1px solid #0088cc;
+        }
+
+        .inline-btn:hover {
+            background: #006699;
+        }
+
+        .inline-btn.selected {
+            background: #27ae60;
+            border-color: #27ae60;
+        }
+
+        /* User input fields in bot */
+        .bot-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
         /* Confirmation Dialog Styles */
         .confirmation-dialog {
             position: fixed;
@@ -1353,10 +1392,14 @@
                         <h4>🤖 Bot Simulator</h4>
                         <div class="bot-screen" id="botScreen">
                             <div class="bot-message">
-                                <p>Type /start to begin simulation</p>
+                                <p>Welcome to Barbershop Bot! 💈</p>
+                                <p>Type a command to start:</p>
                             </div>
-                            <div style="text-align: center; margin-top: 20px;">
-                                <button class="bot-btn" onclick="simulateStart()">/start</button>
+                            <div class="inline-buttons">
+                                <button class="inline-btn" onclick="handleBotCommand('/start')">/start</button>
+                                <button class="inline-btn" onclick="handleBotCommand('/services')">/services</button>
+                                <button class="inline-btn" onclick="handleBotCommand('/book')">/book</button>
+                                <button class="inline-btn" onclick="handleBotCommand('/help')">/help</button>
                             </div>
                         </div>
                     </div>
@@ -1583,6 +1626,8 @@
         let logoutWarningTimer = null;
         let isLoggedIn = false;
         let lastActivity = Date.now();
+        let selectedDate = null;
+        let selectedTime = null;
 
         // Auto-logout configuration (5 minutes = 300000ms)
         const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
@@ -1956,6 +2001,220 @@
                     { id: 4, command: '/book', description: 'Start the booking process' }
                 ]);
             }
+        }
+
+        // Enhanced Telegram Bot Command Handler
+        function handleBotCommand(command) {
+            const screen = document.getElementById('botScreen');
+            
+            switch(command) {
+                case '/start':
+                    screen.innerHTML = `
+                        <div class="bot-message">
+                            <p>Welcome to our Barbershop! 💈</p>
+                            <p>We provide professional haircut and styling services. How can we help you today?</p>
+                        </div>
+                        <div class="inline-buttons">
+                            <button class="inline-btn" onclick="handleBotCommand('/services')">✂️ Services</button>
+                            <button class="inline-btn" onclick="handleBotCommand('/help')">❓ Help</button>
+                        </div>
+                    `;
+                    break;
+
+                case '/services':
+                    const services = storage.get('services');
+                    let servicesText = '<p><strong>Our Services:</strong></p>';
+                    services.forEach((service, index) => {
+                        servicesText += `<p>${index + 1}. ${service.name} - ֏${service.price} (${service.duration} min)</p>`;
+                    });
+                    
+                    screen.innerHTML = `
+                        <div class="bot-message">
+                            ${servicesText}
+                        </div>
+                        <div class="inline-buttons">
+                            <button class="inline-btn" onclick="handleBotCommand('/book')">📅 Book</button>
+                            <button class="inline-btn" onclick="handleBotCommand('/start')">🔙 Back</button>
+                        </div>
+                    `;
+                    break;
+
+                case '/book':
+                    screen.innerHTML = `
+                        <div class="bot-message">
+                            <p><strong>Booking Information:</strong></p>
+                            <p>Please provide your details:</p>
+                            <p><strong>Name:</strong></p>
+                            <input type="text" id="botUserName" class="bot-input" placeholder="Enter your name">
+                            <p><strong>Phone:</strong></p>
+                            <input type="tel" id="botUserPhone" class="bot-input" placeholder="Enter your phone number">
+                        </div>
+                        <div class="inline-buttons">
+                            <button class="inline-btn" onclick="proceedToDateTime()">Next ➡️</button>
+                            <button class="inline-btn" onclick="handleBotCommand('/services')">🔙 Back</button>
+                        </div>
+                    `;
+                    break;
+
+                case '/help':
+                    screen.innerHTML = `
+                        <div class="bot-message">
+                            <p><strong>Help & Information:</strong></p>
+                            <p><strong>📍 Address:</strong> Yerevan, Armenia</p>
+                            <p><strong>📞 Phone:</strong> +374 88 123 456</p>
+                            <p><strong>🕐 Working Hours:</strong></p>
+                            <p>Monday - Friday: 9:00 - 18:00</p>
+                            <p>Saturday: 10:00 - 16:00</p>
+                            <p>Sunday: Closed</p>
+                            <p><strong>💬 Services:</strong> Professional haircuts, beard trimming, styling</p>
+                        </div>
+                        <div class="inline-buttons">
+                            <button class="inline-btn" onclick="handleBotCommand('/start')">🔙 Back</button>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function proceedToDateTime() {
+            const name = document.getElementById('botUserName').value.trim();
+            const phone = document.getElementById('botUserPhone').value.trim();
+            
+            if (!name || !phone) {
+                showNotification('Please fill in all fields', 'warning');
+                return;
+            }
+            
+            currentBookingData = { name, phone };
+            
+            const screen = document.getElementById('botScreen');
+            const dates = storage.get('botDates').filter(d => d.available);
+            const times = storage.get('botTimes').filter(t => t.available);
+            
+            let datesHtml = '<p><strong>Available Dates:</strong></p><div class="inline-buttons">';
+            dates.forEach(date => {
+                datesHtml += `<button class="inline-btn" onclick="selectBotDate('${date.date}')">${date.date}</button>`;
+            });
+            datesHtml += '</div>';
+            
+            let timesHtml = '<p><strong>Available Times:</strong></p><div class="inline-buttons">';
+            times.forEach(time => {
+                timesHtml += `<button class="inline-btn" onclick="selectBotTime('${time.time}')">${time.time}</button>`;
+            });
+            timesHtml += '</div>';
+            
+            screen.innerHTML = `
+                <div class="bot-message">
+                    <p><strong>Select Date & Time:</strong></p>
+                    ${datesHtml}
+                    ${timesHtml}
+                    <div id="botSelectedDateTime" style="margin-top: 15px; padding: 10px; background: #f0f8ff; border-radius: 5px; display: none;">
+                        <strong>Selected:</strong> <span id="selectedInfo"></span>
+                    </div>
+                </div>
+                <div class="inline-buttons" id="confirmButtonContainer" style="display: none;">
+                    <button class="inline-btn" onclick="confirmBotBooking()">✅ Confirm</button>
+                </div>
+                <div class="inline-buttons">
+                    <button class="inline-btn" onclick="handleBotCommand('/book')">🔙 Back</button>
+                </div>
+            `;
+        }
+
+        function selectBotDate(date) {
+            selectedDate = date;
+            updateBotSelection();
+            
+            // Update button styles
+            document.querySelectorAll('.inline-btn').forEach(btn => {
+                if (btn.textContent === date) {
+                    btn.classList.add('selected');
+                } else if (btn.onclick && btn.onclick.toString().includes('selectBotDate')) {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function selectBotTime(time) {
+            selectedTime = time;
+            updateBotSelection();
+            
+            // Update button styles
+            document.querySelectorAll('.inline-btn').forEach(btn => {
+                if (btn.textContent === time) {
+                    btn.classList.add('selected');
+                } else if (btn.onclick && btn.onclick.toString().includes('selectBotTime')) {
+                    btn.classList.remove('selected');
+                }
+            });
+        }
+
+        function updateBotSelection() {
+            if (selectedDate && selectedTime) {
+                document.getElementById('botSelectedDateTime').style.display = 'block';
+                document.getElementById('selectedInfo').textContent = `${selectedDate} at ${selectedTime}`;
+                document.getElementById('confirmButtonContainer').style.display = 'block';
+            }
+        }
+
+        function confirmBotBooking() {
+            if (!selectedDate || !selectedTime) {
+                showNotification('Please select both date and time', 'warning');
+                return;
+            }
+            
+            const screen = document.getElementById('botScreen');
+            
+            // Show booking confirmation
+            screen.innerHTML = `
+                <div class="bot-message">
+                    <p><strong>The reservation has been sent. ✅</strong></p>
+                    <p><strong>Name:</strong> ${currentBookingData.name}</p>
+                    <p><strong>Phone:</strong> ${currentBookingData.phone}</p>
+                    <p><strong>Date:</strong> ${selectedDate}</p>
+                    <p><strong>Time:</strong> ${selectedTime}</p>
+                </div>
+            `;
+            
+            // Create reservation for admin
+            const services = storage.get('services');
+            const randomService = services[Math.floor(Math.random() * services.length)];
+            
+            const reservation = {
+                id: Date.now(),
+                userName: currentBookingData.name,
+                phone: currentBookingData.phone,
+                serviceName: randomService.name,
+                serviceId: randomService.id,
+                date: selectedDate,
+                time: selectedTime,
+                status: 'Pending',
+                notes: 'Booked via Telegram Bot',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Show reservation popup for admin
+            setTimeout(() => {
+                showReservationPopup(reservation);
+            }, 1000);
+            
+            // Simulate admin confirmation after 3 seconds
+            setTimeout(() => {
+                screen.innerHTML = `
+                    <div class="bot-message">
+                        <p><strong>✅ Your reservation is confirmed.</strong></p>
+                        <p>Thank you for choosing our barbershop!</p>
+                    </div>
+                    <div class="inline-buttons">
+                        <button class="inline-btn" onclick="handleBotCommand('/services')">🏠 Home</button>
+                    </div>
+                `;
+            }, 3000);
+            
+            // Reset booking data
+            currentBookingData = {};
+            selectedDate = null;
+            selectedTime = null;
         }
 
         // Moderator Management Functions
@@ -2438,194 +2697,6 @@
             closeBotSettingModal();
         });
 
-        // Bot Simulation Functions
-        function simulateStart() {
-            botSimulationState = 'start';
-            const screen = document.getElementById('botScreen');
-            const images = storage.get('botImages');
-            const content = storage.get('botContent');
-            const buttons = storage.get('botButtons');
-            
-            const welcomeImage = images.find(img => img.name === 'Welcome Image');
-            const welcomeContent = content.find(c => c.name === 'Welcome Message');
-            const servicesBtn = buttons.find(btn => btn.action === 'show_services');
-            const helpBtn = buttons.find(btn => btn.action === 'show_help');
-            
-            screen.innerHTML = `
-                ${welcomeImage ? `<img src="${welcomeImage.url}" alt="${welcomeImage.name}" class="bot-image">` : ''}
-                <div class="bot-message">
-                    <p>${welcomeContent ? welcomeContent.content : 'Welcome to our Barbershop! 💈'}</p>
-                </div>
-                <div class="bot-buttons">
-                    ${servicesBtn ? `<button class="bot-btn" onclick="simulateServices()">${servicesBtn.text}</button>` : ''}
-                    ${helpBtn ? `<button class="bot-btn" onclick="simulateHelp()">${helpBtn.text}</button>` : ''}
-                </div>
-            `;
-        }
-
-        function simulateServices() {
-            botSimulationState = 'services';
-            const screen = document.getElementById('botScreen');
-            const services = storage.get('services');
-            const buttons = storage.get('botButtons');
-            const bookBtn = buttons.find(btn => btn.action === 'start_booking');
-            
-            let servicesHtml = '<div class="bot-message"><p><strong>Our Services:</strong></p>';
-            services.forEach((service, index) => {
-                servicesHtml += `<p>${index + 1}. ${service.name} - ֏${service.price} (${service.duration} min)</p>`;
-            });
-            servicesHtml += '</div>';
-            
-            screen.innerHTML = `
-                ${servicesHtml}
-                <div class="bot-buttons">
-                    ${bookBtn ? `<button class="bot-btn" onclick="simulateBooking()">${bookBtn.text}</button>` : ''}
-                    <button class="bot-btn" onclick="simulateStart()">🔙 Back</button>
-                </div>
-            `;
-        }
-
-        function simulateHelp() {
-            const screen = document.getElementById('botScreen');
-            
-            screen.innerHTML = `
-                <div class="bot-message">
-                    <p><strong>Help & Information:</strong></p>
-                    <p>📍 Address: Yerevan, Armenia</p>
-                    <p>📞 Phone: +374 88 123 456</p>
-                    <p>🕐 Working Hours: 9:00 - 18:00</p>
-                    <p>💬 You can book appointments through this bot</p>
-                </div>
-                <div class="bot-buttons">
-                    <button class="bot-btn" onclick="simulateStart()">🔙 Back</button>
-                </div>
-            `;
-        }
-
-        function simulateBooking() {
-            botSimulationState = 'booking';
-            const screen = document.getElementById('botScreen');
-            
-            screen.innerHTML = `
-                <div class="bot-message">
-                    <p><strong>Booking Information:</strong></p>
-                    <p>Please provide your details:</p>
-                    <p><strong>Name:</strong> <input type="text" id="bookingName" placeholder="Your name" style="margin: 5px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;"></p>
-                    <p><strong>Phone:</strong> <input type="tel" id="bookingPhone" placeholder="Your phone" style="margin: 5px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;"></p>
-                </div>
-                <div class="bot-buttons">
-                    <button class="bot-btn" onclick="simulateDateTime()">Next ➡️</button>
-                    <button class="bot-btn" onclick="simulateServices()">🔙 Back</button>
-                </div>
-            `;
-        }
-
-        function simulateDateTime() {
-            const name = document.getElementById('bookingName').value;
-            const phone = document.getElementById('bookingPhone').value;
-            
-            if (!name || !phone) {
-                showNotification('Please fill in all fields', 'warning');
-                return;
-            }
-            
-            currentBookingData = { name, phone };
-            
-            const screen = document.getElementById('botScreen');
-            const dates = storage.get('botDates').filter(d => d.available);
-            const times = storage.get('botTimes').filter(t => t.available);
-            const buttons = storage.get('botButtons');
-            const confirmBtn = buttons.find(btn => btn.action === 'confirm_booking');
-            
-            let datesHtml = '<p><strong>Available Dates:</strong></p>';
-            dates.forEach(date => {
-                datesHtml += `<button class="bot-btn" onclick="selectDate('${date.date}')" style="margin: 2px; font-size: 12px;">${date.date}</button>`;
-            });
-            
-            let timesHtml = '<p><strong>Available Times:</strong></p>';
-            times.forEach(time => {
-                timesHtml += `<button class="bot-btn" onclick="selectTime('${time.time}')" style="margin: 2px; font-size: 12px;">${time.time}</button>`;
-            });
-            
-            screen.innerHTML = `
-                <div class="bot-message">
-                    <p><strong>Select Date & Time:</strong></p>
-                    ${datesHtml}
-                    ${timesHtml}
-                    <div id="selectedDateTime" style="margin-top: 10px; font-weight: bold;"></div>
-                </div>
-                <div class="bot-buttons">
-                    ${confirmBtn ? `<button class="bot-btn" id="confirmBookingBtn" onclick="simulateConfirm()" style="display: none;">${confirmBtn.text}</button>` : ''}
-                    <button class="bot-btn" onclick="simulateBooking()">🔙 Back</button>
-                </div>
-            `;
-        }
-
-        function selectDate(date) {
-            currentBookingData.date = date;
-            updateSelectedDateTime();
-        }
-
-        function selectTime(time) {
-            currentBookingData.time = time;
-            updateSelectedDateTime();
-        }
-
-        function updateSelectedDateTime() {
-            const selectedDiv = document.getElementById('selectedDateTime');
-            if (currentBookingData.date && currentBookingData.time) {
-                selectedDiv.innerHTML = `Selected: ${currentBookingData.date} at ${currentBookingData.time}`;
-                document.getElementById('confirmBookingBtn').style.display = 'inline-block';
-            }
-        }
-
-        function simulateConfirm() {
-            if (!currentBookingData.date || !currentBookingData.time) {
-                showNotification('Please select date and time', 'warning');
-                return;
-            }
-            
-            // Create reservation
-            const services = storage.get('services');
-            const randomService = services[Math.floor(Math.random() * services.length)];
-            
-            const reservation = {
-                id: Date.now(),
-                userName: currentBookingData.name,
-                phone: currentBookingData.phone,
-                serviceName: randomService.name,
-                serviceId: randomService.id,
-                date: currentBookingData.date,
-                time: currentBookingData.time,
-                status: 'Pending',
-                notes: 'Booked via Telegram Bot',
-                timestamp: new Date().toISOString()
-            };
-            
-            // Show reservation popup
-            showReservationPopup(reservation);
-            
-            // Update bot screen
-            const screen = document.getElementById('botScreen');
-            screen.innerHTML = `
-                <div class="bot-message">
-                    <p><strong>Booking Submitted! ✅</strong></p>
-                    <p>Your booking request has been sent to the admin.</p>
-                    <p>You will receive a confirmation shortly.</p>
-                    <p><strong>Details:</strong></p>
-                    <p>Name: ${currentBookingData.name}</p>
-                    <p>Phone: ${currentBookingData.phone}</p>
-                    <p>Date: ${currentBookingData.date}</p>
-                    <p>Time: ${currentBookingData.time}</p>
-                </div>
-                <div class="bot-buttons">
-                    <button class="bot-btn" onclick="simulateStart()">🏠 Home</button>
-                </div>
-            `;
-            
-            currentBookingData = {};
-        }
-
         function showReservationPopup(reservation) {
             // Create overlay
             const overlay = document.createElement('div');
@@ -2795,36 +2866,6 @@
                     telegramNotification.remove();
                 }
             }, 5000);
-        }
-
-        function handleTelegramCommand(command) {
-            if (!telegramBotConnected) return;
-            
-            const content = storage.get('botContent');
-            let message = '';
-            
-            switch(command) {
-                case '/start':
-                    const startMessage = content.find(c => c.name === 'Start Message');
-                    message = startMessage ? startMessage.content : 'Start the bot and display the welcome message';
-                    break;
-                case '/help':
-                    const helpMessage = content.find(c => c.name === 'Help Message');
-                    message = helpMessage ? helpMessage.content : 'Display help information';
-                    break;
-                case '/services':
-                    const servicesMessage = content.find(c => c.name === 'Services Message');
-                    message = servicesMessage ? servicesMessage.content : 'Display available services';
-                    break;
-                case '/book':
-                    const bookMessage = content.find(c => c.name === 'Book Message');
-                    message = bookMessage ? bookMessage.content : 'Start the booking process';
-                    break;
-                default:
-                    message = 'Unknown command';
-            }
-            
-            simulateTelegramMessage(message);
         }
 
         function updateTelegramBotStatus(connected) {
@@ -3465,153 +3506,4 @@
             } else {
                 container.innerHTML = reservations.map(reservation => `
                     <div class="reservation-item reservation-${reservation.status.toLowerCase()}">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h4>${reservation.userName}</h4>
-                                <p><strong>Ծառայություն:</strong> ${reservation.serviceName}</p>
-                                <p><strong>Ամսաթիվ:</strong> ${reservation.date} ${reservation.time}</p>
-                                <p><strong>Կարգավիճակ:</strong> ${reservation.status}</p>
-                                ${reservation.notes ? `<p><strong>Նշումներ:</strong> ${reservation.notes}</p>` : ''}
-                            </div>
-                            <div>
-                                <button class="btn btn-danger" onclick="confirmDeleteReservation(${reservation.id})">Ջնջել</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function confirmDeleteReservation(id) {
-            showConfirmationDialog(
-                'Are you sure you want to delete?',
-                () => deleteReservation(id)
-            );
-        }
-
-        function deleteReservation(id) {
-            let reservations = storage.get('reservations');
-            reservations = reservations.filter(r => r.id !== id);
-            storage.set('reservations', reservations);
-            loadReservations();
-            loadDashboard();
-            showNotification('Ամրագրումը հաջողությամբ ջնջվեց', 'success');
-        }
-
-        // Password Change Function
-        function changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            
-            if (!currentPassword || !newPassword) {
-                showNotification('Խնդրում ենք լրացնել բոլոր դաշտերը', 'error');
-                return;
-            }
-            
-            const currentPasswordHash = hashPassword(currentPassword);
-            
-            if (currentPasswordHash !== adminPassword) {
-                showNotification('Ընթացիկ գաղտնաբառը սխալ է', 'error');
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                showNotification('Նոր գաղտնաբառը պետք է լինի առնվազն 6 նիշ', 'error');
-                return;
-            }
-            
-            const newPasswordHash = hashPassword(newPassword);
-            adminPassword = newPasswordHash;
-            storage.set('adminPasswordHash', [newPasswordHash]);
-            
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            
-            showNotification('Գաղտնաբառը հաջողությամբ փոխվեց', 'success');
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check for login block on page load
-            checkLoginBlock();
-            
-            // Initialize data
-            initializeData();
-            
-            // Set default password hint
-            console.log('Default password: R00T$522166!Adm!n#ARIA*DEV');
-            
-            // Add keyboard shortcuts for bot commands (for testing)
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.shiftKey) {
-                    switch(e.key) {
-                        case 'S':
-                            e.preventDefault();
-                            handleTelegramCommand('/start');
-                            break;
-                        case 'H':
-                            e.preventDefault();
-                            handleTelegramCommand('/help');
-                            break;
-                        case 'R':
-                            e.preventDefault();
-                            handleTelegramCommand('/services');
-                            break;
-                        case 'B':
-                            e.preventDefault();
-                            handleTelegramCommand('/book');
-                            break;
-                    }
-                }
-            });
-
-            // Check for existing session
-            if (checkExistingSession()) {
-                isLoggedIn = true;
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                initializeData();
-                loadDashboard();
-                resetInactivityTimer();
-                showNotification('Welcome back!', 'success');
-            }
-
-            // Track user activity
-            trackActivity();
-        });
-
-        // Close modals when clicking outside
-        window.addEventListener('click', function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // ESC to close modals
-            if (e.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal');
-                modals.forEach(modal => {
-                    modal.style.display = 'none';
-                });
-                
-                // Close confirmation dialogs
-                const confirmationDialog = document.querySelector('.confirmation-dialog');
-                if (confirmationDialog) {
-                    closeConfirmationDialog(false);
-                }
-            }
-
-            // Enter to send message in chat
-            if (e.key === 'Enter' && !e.shiftKey && document.activeElement.id === 'messageInput') {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-    </script>
-</body>
-</html>
+                        <div style="display: flex; justify-content: space-between; align-items
