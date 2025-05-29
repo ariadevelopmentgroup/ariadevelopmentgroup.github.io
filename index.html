@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Barbershop Management System</h1>
+
+        <section id="telegram-bot-section">
+            <h2>Telegram Bot Integration</h2>
+            <div class="input-group">
+                <label for="telegramBotToken">Telegram Bot Token:</label>
+                <input type="text" id="telegramBotToken" placeholder="Enter your bot token">
+            </div>
+            <div class="input-group">
+                <label for="telegramId">Telegram Chat ID:</label>
+                <input type="text" id="telegramId" placeholder="Enter your Telegram Chat ID">
+            </div>
+            <div class="button-group">
+                <button onclick="connectTelegramBot()">Connect</button>
+                <button onclick="testTelegramBot()">Test Connection</button>
+                <button onclick="deleteTelegramBot()">Disconnect</button>
+                <span id="telegramBotStatus"></span>
+            </div>
+        </section>
+
+        <section id="content-management-section">
+            <h2>Content Management</h2>
+            <div class="content-item">
+                <label for="startMessage">Start Message:</label>
+                <textarea id="startMessage" placeholder="Enter the start message"></textarea>
+            </div>
+            <div class="content-item">
+                <label for="helpMessage">Help Message:</label>
+                <textarea id="helpMessage" placeholder="Enter the help message"></textarea>
+            </div>
+            <div class="content-item">
+                <label for="servicesMessage">Services Message:</label>
+                <textarea id="servicesMessage" placeholder="Enter the services message"></textarea>
+            </div>
+            <div class="content-item">
+                <label for="bookMessage">Book Message:</label>
+                <textarea id="bookMessage" placeholder="Enter the booking message"></textarea>
+            </div>
+            <button onclick="saveContent()">Save Content</button>
+        </section>
+
+        <section id="services-section">
+            <h2>Services</h2>
+            <div id="services-list">
+                <!-- Services will be dynamically added here -->
+            </div>
+            <div class="add-service-form">
+                <input type="text" id="newServiceName" placeholder="Service Name">
+                <input type="number" id="newServicePrice" placeholder="Price">
+                <input type="number" id="newServiceDuration" placeholder="Duration (minutes)">
+                <button onclick="addService()">Add Service</button>
+            </div>
+        </section>
+
+        <section id="simulation-section">
+            <h2>Simulation</h2>
+            <div class="simulation-buttons">
+                <button onclick="simulateStart()">Simulate /start</button>
+                <button onclick="simulateHelp()">Simulate /help</button>
+                <button onclick="simulateServices()">Simulate /services</button>
+                <button onclick="simulateBooking()">Simulate /book</button>
+                <button onclick="simulateTelegramMessage('Custom Message')">Simulate Custom Message</button>
+            </div>
+            <div id="telegram-messages">
+                <!-- Telegram messages will appear here -->
+            </div>
+        </section>
+
+        <div id="notification-area">
+            <!-- Notifications will appear here -->
+        </div>
+
+        <div id="confirmation-dialog" style="display: none;">
+            <p id="confirmation-message"></p>
+            <button id="confirm-button">Confirm</button>
+            <button id="cancel-button">Cancel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const storage = localforage;
+
+        let telegramBotConnected = false;
+        let syncInterval;
+        let contentSyncInterval;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            loadContent();
+            loadTelegramBotStatus();
+        });
+
+        function loadTelegramBotStatus() {
+            storage.getItem('telegramBot').then(data => {
+                if (data && data.length > 0) {
+                    const botData = data[0];
+                    document.getElementById('telegramBotToken').value = botData.token;
+                    document.getElementById('telegramId').value = botData.telegramId;
+                    telegramBotConnected = botData.connected;
+                    updateTelegramBotStatus(botData.connected);
+                }
+            });
+        }
+
+        function connectTelegramBot() {
+            const token = document.getElementById('telegramBotToken').value;
+            const telegramId = document.getElementById('telegramId').value;
+
+            if (!token || !telegramId) {
+                showNotification('Please enter both token and Telegram ID', 'warning');
+                return;
+            }
+
+            showNotification('Connecting to Telegram Bot...', 'info');
+
+            // Simulate connection (replace with actual API call)
+            setTimeout(() => {
+                telegramBotConnected = true;
+                updateTelegramBotStatus(true);
+                
+                storage.set('telegramBot', [{
+                    token: token,
+                    telegramId: telegramId,
+                    connected: true,
+                    connectedAt: new Date().toISOString()
+                }]);
+
+                showNotification('Telegram Bot connected successfully', 'success');
+                
+                // Send welcome message to simulate bot activation
+                simulateTelegramMessage('🤖 Telegram Bot has been successfully integrated into the management system');
+                
+                // Start real-time synchronization
+                startSyncIntervals();
+            }, 1000);
+        }
+
+        function testTelegramBot() {
+            if (!telegramBotConnected) {
+                showNotification('Please connect the bot first', 'warning');
+                return;
+            }
+
+            // Send test message
+            simulateTelegramMessage('Test connection successful! The Telegram Bot is properly integrated with the management system.');
+            showNotification('Test message sent to Telegram bot', 'success');
+        }
+
+        function deleteTelegramBot() {
+            showConfirmationDialog(
+                'Are you sure you want to delete?',
+                () => {
+                    // Send deletion message before disconnecting
+                    if (telegramBotConnected) {
+                        simulateTelegramMessage('Telegram Bot has been successfully removed from the management system');
+                    }
+                    
+                    telegramBotConnected = false;
+                    updateTelegramBotStatus(false);
+                    document.getElementById('telegramBotToken').value = '';
+                    document.getElementById('telegramId').value = '';
+                    storage.remove('telegramBot');
+                    clearSyncIntervals();
+                    showNotification('Telegram Bot deleted successfully', 'success');
+                }
+            );
+        }
+
+        function updateTelegramBotStatus(isConnected) {
+            const statusElement = document.getElementById('telegramBotStatus');
+            statusElement.textContent = isConnected ? 'Connected' : 'Disconnected';
+            statusElement.className = isConnected ? 'connected' : 'disconnected';
+        }
+
+        function saveContent() {
+            const startMessage = document.getElementById('startMessage').value;
+            const helpMessage = document.getElementById('helpMessage').value;
+            const servicesMessage = document.getElementById('servicesMessage').value;
+            const bookMessage = document.getElementById('bookMessage').value;
+
+            const content = [
+                { name: 'Start Message', content: startMessage },
+                { name: 'Help Message', content: helpMessage },
+                { name: 'Services Message', content: servicesMessage },
+                { name: 'Book Message', content: bookMessage }
+            ];
+
+            storage.set('botContent', content).then(() => {
+                showNotification('Content saved successfully', 'success');
+            });
+        }
+
+        function loadContent() {
+            storage.getItem('botContent').then(content => {
+                if (content) {
+                    const startMessage = content.find(c => c.name === 'Start Message');
+                    const helpMessage = content.find(c => c.name === 'Help Message');
+                    const servicesMessage = content.find(c => c.name === 'Services Message');
+                    const bookMessage = content.find(c => c.name === 'Book Message');
+
+                    document.getElementById('startMessage').value = startMessage ? startMessage.content : '';
+                    document.getElementById('helpMessage').value = helpMessage ? helpMessage.content : '';
+                    document.getElementById('servicesMessage').value = servicesMessage ? servicesMessage.content : '';
+                    document.getElementById('bookMessage').value = bookMessage ? bookMessage.content : '';
+                }
+            });
+        }
+
+        function addService() {
+            const name = document.getElementById('newServiceName').value;
+            const price = document.getElementById('newServicePrice').value;
+            const duration = document.getElementById('newServiceDuration').value;
+
+            if (!name || !price || !duration) {
+                showNotification('Please fill in all service details', 'warning');
+                return;
+            }
+
+            const newService = { name: name, price: price, duration: duration };
+
+            storage.getItem('services').then(services => {
+                const updatedServices = services ? [...services, newService] : [newService];
+                return storage.set('services', updatedServices);
+            }).then(() => {
+                showNotification('Service added successfully', 'success');
+                loadServices();
+                document.getElementById('newServiceName').value = '';
+                document.getElementById('newServicePrice').value = '';
+                document.getElementById('newServiceDuration').value = '';
+            });
+        }
+
+        function loadServices() {
+            const servicesList = document.getElementById('services-list');
+            servicesList.innerHTML = ''; // Clear existing list
+
+            storage.getItem('services').then(services => {
+                if (services) {
+                    services.forEach((service, index) => {
+                        const serviceElement = document.createElement('div');
+                        serviceElement.classList.add('service-item');
+                        serviceElement.innerHTML = `
+                            <span>${service.name} - ֏${service.price} (${service.duration} min)</span>
+                            <button onclick="deleteService(${index})">Delete</button>
+                        `;
+                        servicesList.appendChild(serviceElement);
+                    });
+                }
+            });
+        }
+
+        function deleteService(index) {
+            showConfirmationDialog(
+                'Are you sure you want to delete this service?',
+                () => {
+                    storage.getItem('services').then(services => {
+                        if (services) {
+                            services.splice(index, 1);
+                            return storage.set('services', services);
+                        }
+                    }).then(() => {
+                        showNotification('Service deleted successfully', 'success');
+                        loadServices();
+                    });
+                }
+            );
+        }
+
+        function simulateTelegramMessage(message) {
+            const messagesDiv = document.getElementById('telegram-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('telegram-message');
+            messageDiv.textContent = message;
+            messagesDiv.appendChild(messageDiv);
+
+            // Scroll to the bottom to show the latest message
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function handleTelegramCommand(command) {
+            if (!telegramBotConnected) return;
+            
+            const content = storage.get('botContent');
+            let message = '';
+            
+            switch(command) {
+                case '/start':
+                    const startMessage = content.find(c => c.name === 'Start Message');
+                    message = startMessage ? startMessage.content : 'Welcome to our Barbershop! 💈\n\nWe provide professional haircut and styling services. How can we help you today?';
+                    simulateStart(); // Trigger the start simulation
+                    break;
+                case '/help':
+                    const helpMessage = content.find(c => c.name === 'Help Message');
+                    message = helpMessage ? helpMessage.content : 'Help & Information:\n📍 Address: Yerevan, Armenia\n📞 Phone: +374 88 123 456\n🕐 Working Hours: 9:00 - 18:00\n💬 You can book appointments through this bot';
+                    simulateHelp(); // Trigger the help simulation
+                    break;
+                case '/services':
+                    const servicesMessage = content.find(c => c.name === 'Services Message');
+                    message = servicesMessage ? servicesMessage.content : 'Our Services:\n' + 
+                        storage.get('services').map((s, i) => `${i+1}. ${s.name} - ֏${s.price} (${s.duration} min)`).join('\n');
+                    simulateServices(); // Trigger the services simulation
+                    break;
+                case '/book':
+                    const bookMessage = content.find(c => c.name === 'Book Message');
+                    message = bookMessage ? bookMessage.content : 'Let\'s book an appointment for you! Please provide your name and phone number.';
+                    simulateBooking(); // Trigger the booking simulation
+                    break;
+                default:
+                    message = 'Unknown command. Try /start, /help, /services, or /book';
+            }
+            
+            simulateTelegramMessage(message);
+        }
+
+        function simulateStart() {
+            handleTelegramCommand('/start');
+        }
+
+        function simulateHelp() {
+            handleTelegramCommand('/help');
+        }
+
+        function simulateServices() {
+            handleTelegramCommand('/services');
+        }
+
+        function simulateBooking() {
+            handleTelegramCommand('/book');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notificationArea = document.getElementById('notification-area');
+            const notification = document.createElement('div');
+            notification.classList.add('notification', type);
+            notification.textContent = message;
+            notificationArea.appendChild(notification);
+
+            // Remove the notification after a few seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showConfirmationDialog(message, onConfirm) {
+            const dialog = document.getElementById('confirmation-dialog');
+            const confirmButton = document.getElementById('confirm-button');
+            const cancelButton = document.getElementById('cancel-button');
+            const confirmationMessage = document.getElementById('confirmation-message');
+
+            confirmationMessage.textContent = message;
+            confirmButton.onclick = () => {
+                onConfirm();
+                dialog.style.display = 'none';
+            };
+            cancelButton.onclick = () => {
+                dialog.style.display = 'none';
+            };
+
+            dialog.style.display = 'block';
+        }
+
+        function startSyncIntervals() {
+            syncInterval = setInterval(() => {
+                // Simulate real-time synchronization (replace with actual sync logic)
+                console.log('Simulating real-time synchronization...');
+                // You can add your synchronization logic here
+            }, 60000); // Every 60 seconds
+
+            contentSyncInterval = setInterval(() => {
+                loadContent();
+                loadServices();
+            }, 300000); // Every 5 minutes
+        }
+
+        function clearSyncIntervals() {
+            clearInterval(syncInterval);
+            clearInterval(contentSyncInterval);
+        }
+
+        // Add keyboard shortcuts for bot commands (for testing)
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey) {
+                switch(e.key) {
+                    case 'S':
+                        e.preventDefault();
+                        handleTelegramCommand('/start');
+                        break;
+                    case 'H':
+                        e.preventDefault();
+                        handleTelegramCommand('/help');
+                        break;
+                    case 'R':
+                        e.preventDefault();
+                        handleTelegramCommand('/services');
+                        break;
+                    case 'B':
+                        e.preventDefault();
+                        handleTelegramCommand('/book');
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
