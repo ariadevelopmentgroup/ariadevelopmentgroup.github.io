@@ -928,6 +928,7 @@
             max-width: 400px;
             width: 90%;
             text-align: center;
+            animation: popupSlideIn 0.3s ease-out;
         }
 
         .confirmation-dialog h3 {
@@ -1695,10 +1696,10 @@
             if (!storage.get('botContent').length) {
                 storage.set('botContent', [
                     { id: 1, name: 'Welcome Message', content: 'Welcome to our Barbershop! 💈\n\nWe provide professional haircut and styling services. How can we help you today?' },
-                    { id: 2, name: 'Start Message', content: 'Start the bot and show welcome message' },
-                    { id: 3, name: 'Help Message', content: 'Show help information' },
-                    { id: 4, name: 'Services Message', content: 'Show available services' },
-                    { id: 5, name: 'Book Message', content: 'Start booking process' }
+                    { id: 2, name: 'Start Message', content: 'Start the bot and display the welcome message' },
+                    { id: 3, name: 'Help Message', content: 'Display help information' },
+                    { id: 4, name: 'Services Message', content: 'Display available services' },
+                    { id: 5, name: 'Book Message', content: 'Start the booking process' }
                 ]);
             }
 
@@ -1739,10 +1740,10 @@
 
             if (!storage.get('botCommands').length) {
                 storage.set('botCommands', [
-                    { id: 1, command: '/start', description: 'Start the bot and show welcome message' },
-                    { id: 2, command: '/help', description: 'Show help information' },
-                    { id: 3, command: '/services', description: 'Show available services' },
-                    { id: 4, command: '/book', description: 'Start booking process' }
+                    { id: 1, command: '/start', description: 'Start the bot and display the welcome message' },
+                    { id: 2, command: '/help', description: 'Display help information' },
+                    { id: 3, command: '/services', description: 'Display available services' },
+                    { id: 4, command: '/book', description: 'Start the booking process' }
                 ]);
             }
         }
@@ -2482,19 +2483,19 @@
             switch(command) {
                 case '/start':
                     const startMessage = content.find(c => c.name === 'Start Message');
-                    message = startMessage ? startMessage.content : 'Start the bot and show welcome message';
+                    message = startMessage ? startMessage.content : 'Start the bot and display the welcome message';
                     break;
                 case '/help':
                     const helpMessage = content.find(c => c.name === 'Help Message');
-                    message = helpMessage ? helpMessage.content : 'Show help information';
+                    message = helpMessage ? helpMessage.content : 'Display help information';
                     break;
                 case '/services':
                     const servicesMessage = content.find(c => c.name === 'Services Message');
-                    message = servicesMessage ? servicesMessage.content : 'Show available services';
+                    message = servicesMessage ? servicesMessage.content : 'Display available services';
                     break;
                 case '/book':
                     const bookMessage = content.find(c => c.name === 'Book Message');
-                    message = bookMessage ? bookMessage.content : 'Start booking process';
+                    message = bookMessage ? bookMessage.content : 'Start the booking process';
                     break;
                 default:
                     message = 'Unknown command';
