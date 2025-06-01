@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html lang="hy">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barbershop Admin Dashboard</title>
+    <title>Կառավարման էջ</title>
     <style>
         * {
             margin: 0;
@@ -694,22 +694,22 @@
     <div id="loginPage" class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1>Barbershop Admin</h1>
-                <p>Please login to continue</p>
+                <h1>Կառավարման էջ</h1>
+                <p>Խնդրում ենք մուտք գործել՝ շարունակելու համար</p>
             </div>
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="userType">Login as:</label>
+                    <label for="userType">Մուտք գործել որպես՝</label>
                     <select id="userType" class="form-control" required>
-                        <option value="admin">Administrator</option>
-                        <option value="moderator">Moderator</option>
+                        <option value="admin">Ադմինիստրատոր</option>
+                        <option value="moderator">Մոդերատոր</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="password">Գաղտնաբառ</label>
                     <input type="password" id="password" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Մուտք գործել</button>
             </form>
         </div>
     </div>
@@ -720,36 +720,36 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2>Barbershop</h2>
-                <p>Admin Dashboard</p>
+                <p>Ադմինիստրատորի վահանակ</p>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="#" class="nav-link active" data-page="dashboard">
-                        📊 Dashboard
+                        📊 Վահանակ
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-page="services">
-                        ✂️ Services
+                        ✂️ Ծառայություններ
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-page="users">
-                        👥 Users
+                        👥 Օգտատերեր
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-page="bookings">
-                        📅 Bookings
+                        📅 Ամրագրումներ
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-page="settings">
-                        ⚙️ Settings
+                        ⚙️ Կարգավորումներ
                     </a>
                 </li>
             </ul>
-            <button id="logoutBtn" class="btn btn-danger logout-btn">Logout</button>
+            <button id="logoutBtn" class="btn btn-danger logout-btn">Ելք</button>
         </div>
 
         <!-- Main Content -->
@@ -757,25 +757,25 @@
             <!-- Dashboard Page -->
             <div id="dashboardPage" class="page active">
                 <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
+                    <h1 class="page-title">Գլխավոր էջ</h1>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number" id="totalUsers">0</div>
-                        <div class="stat-label">Total Users</div>
+                        <div class="stat-label">Ընդհանուր օգտատերեր</div>
                         <div class="stat-buttons">
-                            <button class="btn btn-sm btn-secondary" onclick="filterStats('daily')">Daily</button>
-                            <button class="btn btn-sm btn-secondary" onclick="filterStats('weekly')">Weekly</button>
-                            <button class="btn btn-sm btn-secondary" onclick="filterStats('monthly')">Monthly</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('daily')">Օրական</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('weekly')">Շաբաթական</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('monthly')">Ամսական</button>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="totalBookings">0</div>
-                        <div class="stat-label">Total Bookings</div>
+                        <div class="stat-label">Ընդհանուր ամրագրումներ</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="totalServices">0</div>
-                        <div class="stat-label">Total Services</div>
+                        <div class="stat-label">Ընդհանուր ծառայություններ</div>
                     </div>
                 </div>
             </div>
@@ -783,19 +783,19 @@
             <!-- Services Page -->
             <div id="servicesPage" class="page">
                 <div class="page-header">
-                    <h1 class="page-title">Services</h1>
-                    <button id="addServiceBtn" class="btn btn-primary" onclick="openServiceModal()">Add Service</button>
+                    <h1 class="page-title">Ծառայություններ</h1>
+                    <button id="addServiceBtn" class="btn btn-primary" onclick="openServiceModal()">Ավելացնել ծառայություն</button>
                 </div>
                 <div class="card">
                     <div class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Duration</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
+                                    <th>Անուն</th>
+                                    <th>Նկարագրություն</th>
+                                    <th>Տևողություն</th>
+                                    <th>Գինը</th>
+                                    <th>Գործողություններ</th>
                                 </tr>
                             </thead>
                             <tbody id="servicesTable">
@@ -809,19 +809,19 @@
             <!-- Users Page -->
             <div id="usersPage" class="page">
                 <div class="page-header">
-                    <h1 class="page-title">Users</h1>
+                    <h1 class="page-title">Օգտատերեր</h1>
                 </div>
                 <div class="card">
                     <div class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Telegram ID</th>
-                                    <th>Bonuses</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Անուն</th>
+                                    <th>Հեռախոս</th>
+                                    <th>Telegram ID-ն</th>
+                                    <th>Բոնուսներ</th>
+                                    <th>Կարգավիճակ</th>
+                                    <th>Գործողություններ</th>
                                 </tr>
                             </thead>
                             <tbody id="usersTable">
@@ -835,19 +835,19 @@
             <!-- Bookings Page -->
             <div id="bookingsPage" class="page">
                 <div class="page-header">
-                    <h1 class="page-title">Bookings</h1>
+                    <h1 class="page-title">Ամրագրումներ</h1>
                 </div>
                 <div class="card">
                     <div class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>User</th>
-                                    <th>Service</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>Օգտատեր</th>
+                                    <th>Ծառայություն</th>
+                                    <th>Ամսաթիվ</th>
+                                    <th>Ժամ</th>
+                                    <th>Կարգավիճակ</th>
+                                    <th>Գործողություններ</th>
                                 </tr>
                             </thead>
                             <tbody id="bookingsTable">
@@ -861,109 +861,109 @@
             <!-- Settings Page -->
             <div id="settingsPage" class="page">
                 <div class="page-header">
-                    <h1 class="page-title">Settings</h1>
+                    <h1 class="page-title">Կարգավորումներ</h1>
                 </div>
 
                 <!-- Content Settings -->
                 <div class="settings-section">
-                    <h3>Content Management</h3>
+                    <h3>Բովանդակության կառավարում</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Business Name:</label>
+                            <label>Բիզնեսի անվանումը</label>
                             <input type="text" id="businessName" class="form-control" value="Elite Barbershop">
                         </div>
                         <div class="form-group">
-                            <label>Address:</label>
+                            <label>Հասցե</label>
                             <input type="text" id="businessAddress" class="form-control" value="123 Main Street, City">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Phone:</label>
+                            <label>Հեռախոսահամար</label>
                             <input type="text" id="businessPhone" class="form-control" value="+1234567890">
                         </div>
                         <div class="form-group">
-                            <label>Working Hours:</label>
+                            <label>Աշխատանքային ժամեր</label>
                             <input type="text" id="workingHours" class="form-control" value="Mon-Sat: 9AM-8PM">
                         </div>
                     </div>
-                    <button id="saveContentBtn" class="btn btn-primary" onclick="saveContentSettings()">Save Content</button>
+                    <button id="saveContentBtn" class="btn btn-primary" onclick="saveContentSettings()">Պահպանել</button>
                 </div>
 
                 <!-- Telegram Bot Settings -->
                 <div class="settings-section">
-                    <h3>Telegram Bot Settings</h3>
+                    <h3>Telegram Bot-ի կարգավորումներ</h3>
                     <div class="form-group">
                         <label>Bot Token:</label>
-                        <input type="text" id="botToken" class="form-control" placeholder="Enter your Telegram Bot Token">
+                        <input type="text" id="botToken" class="form-control" placeholder="Մուտքագրեք ձեր Telegram Bot Token-ը">
                     </div>
                     <div class="form-group">
                         <label>Bot Username:</label>
-                        <input type="text" id="botUsername" class="form-control" placeholder="@your_bot_username" readonly>
+                        <input type="text" id="botUsername" class="form-control" placeholder="@ձեր_բոտի_օգտատիրոջ_անունը" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Bot Status:</label>
-                        <span id="botStatus" class="status-badge status-pending">Not Connected</span>
+                        <label>Բոտի կարգավիճակ</label>
+                        <span id="botStatus" class="status-badge status-pending">Միացված չէ</span>
                     </div>
                     <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="importBotAPI()">Import Bot API</button>
-                        <button class="btn btn-success" onclick="testTelegramBot()">Test Bot</button>
-                        <button class="btn btn-warning" onclick="setupWebhook()">Setup Webhook</button>
-                        <button class="btn btn-danger" onclick="showDeleteConfirmation('bot', null, 'Delete Bot')">Delete Bot</button>
+                        <button class="btn btn-primary" onclick="importBotAPI()">Ներմուծել Bot API</button>
+                        <button class="btn btn-success" onclick="testTelegramBot()">Փորձարկել Bot-ը</button>
+                        <button class="btn btn-warning" onclick="setupWebhook()">Կարգավորեք Webhook-ը</button>
+                        <button class="btn btn-danger" onclick="showDeleteConfirmation('bot', null, 'Delete Bot')">Ջնջել Bot-ը</button>
                     </div>
                     
                     <!-- Bot Configuration Panel -->
                     <div id="botConfigPanel" style="display: none; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
-                        <h4>Bot Configuration</h4>
+                        <h4>Bot- կարգավորում</h4>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Welcome Message:</label>
+                                <label>Ողջույնի ուղերձ</label>
                                 <textarea id="welcomeMessage" class="form-control" rows="3" placeholder="Welcome to our barbershop!"></textarea>
                             </div>
                             <div class="form-group">
-                                <label>Auto-Reply:</label>
+                                <label>Ավտոմատ պատասխան</label>
                                 <select id="autoReply" class="form-control">
-                                    <option value="enabled">Enabled</option>
-                                    <option value="disabled">Disabled</option>
+                                    <option value="enabled">Միացնել</option>
+                                    <option value="disabled">Անջատել</option>
                                 </select>
                             </div>
                         </div>
-                        <button class="btn btn-primary" onclick="saveBotConfig()">Save Configuration</button>
+                        <button class="btn btn-primary" onclick="saveBotConfig()">Պահպանել</button>
                     </div>
                     
                     <!-- Bot Activity Log -->
                     <div id="botActivityLog" style="margin-top: 1rem;">
-                        <h4>Bot Activity Log</h4>
+                        <h4>Bot-ի գործունեության գրանցամատյան</h4>
                         <div id="activityLogContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem;">
-                            <p style="color: var(--text-secondary);">No activity yet...</p>
+                            <p style="color: var(--text-secondary);">Դեռևս ոչ մի գործունեություն...</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Bonus Settings -->
                 <div class="settings-section">
-                    <h3>Bonus Settings</h3>
+                    <h3>Բոնուսային կարգավորումներ</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Bonus per Service:</label>
+                            <label>Բոնուս մեկ ծառայության համար</label>
                             <input type="number" id="bonusPerService" class="form-control" value="10">
                         </div>
                         <div class="form-group">
-                            <label>Bonus Value (%):</label>
+                            <label>Բոնուսային արժեք (%):</label>
                             <input type="number" id="bonusValue" class="form-control" value="5">
                         </div>
                     </div>
                     <div class="action-buttons">
-                        <button class="btn btn-success" onclick="toggleBonusSystem(true)">Enable</button>
-                        <button class="btn btn-danger" onclick="toggleBonusSystem(false)">Disable</button>
-                        <button class="btn btn-primary" onclick="saveBonusSettings()">Save</button>
+                        <button class="btn btn-success" onclick="toggleBonusSystem(true)">Միացնել</button>
+                        <button class="btn btn-danger" onclick="toggleBonusSystem(false)">Անջատել</button>
+                        <button class="btn btn-primary" onclick="saveBonusSettings()">Պահպանել</button>
                     </div>
                 </div>
 
                 <!-- Moderator Management -->
                 <div class="settings-section">
-                    <h3>Moderator Management</h3>
-                    <button class="btn btn-primary" onclick="openModeratorModal()">Add Moderator</button>
+                    <h3>Մոդերատորի կառավարում</h3>
+                    <button class="btn btn-primary" onclick="openModeratorModal()">Ավելացնել Մոդերատոր</button>
                     <div id="moderatorsList" class="mt-3">
                         <!-- Moderators will be listed here -->
                     </div>
@@ -971,22 +971,22 @@
 
                 <!-- Backup Settings -->
                 <div class="settings-section">
-                    <h3>Backup & Data</h3>
+                    <h3>Պահուստավորում և տվյալներ</h3>
                     <div class="action-buttons">
-                        <button class="btn btn-primary" onclick="createBackup()">Create Backup</button>
-                        <button class="btn btn-warning" onclick="importBackup()">Import Backup</button>
+                        <button class="btn btn-primary" onclick="createBackup()">Ստեղծել Backup</button>
+                        <button class="btn btn-warning" onclick="importBackup()">Ներմուծել Backup</button>
                     </div>
                     <div id="backupsList" class="mt-3">
-                        <h4>Available Backups</h4>
+                        <h4>Հասանելի պահուստային պատճեններ</h4>
                         <div class="table-container">
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Size</th>
-                                        <th>Actions</th>
+                                        <th>Անվանում</th>
+                                        <th>Ամսաթիվ</th>
+                                        <th>Ժամ</th>
+                                        <th>Չափս</th>
+                                        <th>Գործողություններ</th>
                                     </tr>
                                 </thead>
                                 <tbody id="backupsTable">
@@ -999,12 +999,12 @@
 
                 <!-- Password Change -->
                 <div class="settings-section">
-                    <h3>Change Password</h3>
+                    <h3>Փոխել գաղտնաբառը</h3>
                     <div class="form-group">
-                        <label>New Admin Password:</label>
+                        <label>Նոր ադմինիստրատորի գաղտնաբառ</label>
                         <input type="password" id="newPassword" class="form-control">
                     </div>
-                    <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                    <button class="btn btn-primary" onclick="changePassword()">Փոխել գաղտնաբառը</button>
                 </div>
             </div>
         </div>
@@ -1014,31 +1014,31 @@
     <div id="serviceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Add/Edit Service</h3>
+                <h3 class="modal-title">Ավելացնել/խմբագրել ծառայությունը</h3>
                 <button class="close-btn" onclick="closeModal('serviceModal')">&times;</button>
             </div>
             <form id="serviceForm">
                 <div class="form-group">
-                    <label>Service Name:</label>
+                    <label>Ծառայության անվանում</label>
                     <input type="text" id="serviceName" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Description:</label>
+                    <label>Նկարագրություն</label>
                     <textarea id="serviceDescription" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Duration (minutes):</label>
+                        <label>Տևողություն (րոպե)</label>
                         <input type="number" id="serviceDuration" class="form-control" required min="1">
                     </div>
                     <div class="form-group">
-                        <label>Price ($):</label>
+                        <label>Գին (֏):</label>
                         <input type="number" id="servicePrice" class="form-control" step="0.01" required min="0">
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button type="submit" class="btn btn-primary">Save Service</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('serviceModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Պահպանել</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('serviceModal')">Չեղարկել</button>
                 </div>
             </form>
         </div>
@@ -1048,29 +1048,29 @@
     <div id="userModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Edit User</h3>
+                <h3 class="modal-title">Խմբագրել օգտատիրոջը</h3>
                 <button class="close-btn" onclick="closeModal('userModal')">&times;</button>
             </div>
             <form id="userForm">
                 <div class="form-group">
-                    <label>Name:</label>
+                    <label>Անուն</label>
                     <input type="text" id="userName" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Phone:</label>
+                    <label>Հեռախոս</label>
                     <input type="tel" id="userPhone" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Telegram ID:</label>
+                    <label>Տելեգրամ ID:</label>
                     <input type="text" id="userTelegramId" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label>Bonuses:</label>
+                    <label>Բոնուսներ</label>
                     <input type="number" id="userBonuses" class="form-control" value="0" min="0">
                 </div>
                 <div class="action-buttons">
-                    <button type="submit" class="btn btn-primary">Save User</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Պահպանել</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Չեղարկել</button>
                 </div>
             </form>
         </div>
@@ -1080,35 +1080,35 @@
     <div id="blockUserModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Block User</h3>
+                <h3 class="modal-title">Արգելափակել օգտատիրոջը</h3>
                 <button class="close-btn" onclick="closeModal('blockUserModal')">&times;</button>
             </div>
             <form id="blockUserForm">
                 <div class="form-group">
-                    <label>Block Type:</label>
+                    <label>Արգելափակման տեսակը</label>
                     <select id="blockType" class="form-control" required>
-                        <option value="telegram">By Telegram ID</option>
-                        <option value="phone">By Phone Number</option>
-                        <option value="ip">By IP Address</option>
+                        <option value="telegram">Telegram ID-ի միջոցով</option>
+                        <option value="phone">Հեռախոսահամարի միջոցով</option>
+                        <option value="ip">IP հասցեի միջոցով</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Block Duration:</label>
+                    <label>Արգելափակման տևողությունը</label>
                     <select id="blockDuration" class="form-control" required>
-                        <option value="1">1 Day</option>
-                        <option value="7">1 Week</option>
-                        <option value="30">1 Month</option>
-                        <option value="365">1 Year</option>
-                        <option value="permanent">Permanent</option>
+                        <option value="1">1 Օր</option>
+                        <option value="7">1 Շաբաթ</option>
+                        <option value="30">1 Ամիս</option>
+                        <option value="365">1 Տարի</option>
+                        <option value="permanent">Մշտական</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Reason:</label>
+                    <label>Պատճառ</label>
                     <textarea id="blockReason" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="action-buttons">
-                    <button type="submit" class="btn btn-danger">Block User</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('blockUserModal')">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Արգելափակել օգտատիրոջը</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('blockUserModal')">Չեղարկել</button>
                 </div>
             </form>
         </div>
@@ -1118,109 +1118,109 @@
     <div id="moderatorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Add/Edit Moderator</h3>
+                <h3 class="modal-title">Ավելացնել/Խմբագրել Մոդերատոր</h3>
                 <button class="close-btn" onclick="closeModal('moderatorModal')">&times;</button>
             </div>
             <form id="moderatorForm">
                 <div class="form-group">
-                    <label>Name:</label>
+                    <label>Անուն</label>
                     <input type="text" id="moderatorName" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Phone:</label>
+                    <label>Հեռախոս</label>
                     <input type="tel" id="moderatorPhone" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Password:</label>
+                    <label>Գաղտնաբառ</label>
                     <input type="password" id="moderatorPassword" class="form-control" required minlength="6">
                 </div>
                 <div class="form-group">
-                    <label>Permissions:</label>
+                    <label>Թույլտվություններ</label>
                     <div class="permission-details">
                         <!-- Bookings Permissions -->
                         <div class="permission-item">
-                            <div class="permission-name">📅 Bookings Page</div>
+                            <div class="permission-name">📅 Ամրագրումների էջ</div>
                             <div class="permission-controls">
-                                <span class="permission-label">View:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'view', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'view', false)">Disable</button>
-                                <span class="permission-status permission-enabled" id="bookingsViewStatus">Enabled</span>
+                                <span class="permission-label">Դիտել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'view', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'view', false)">Անջատել</button>
+                                <span class="permission-status permission-enabled" id="bookingsViewStatus">Միացված է</span>
                             </div>
                         </div>
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span class="permission-label">Edit:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'edit', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'edit', false)">Disable</button>
-                                <span class="permission-status permission-enabled" id="bookingsEditStatus">Enabled</span>
+                                <span class="permission-label">Խմբագրել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'edit', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'edit', false)">Անջատել</button>
+                                <span class="permission-status permission-enabled" id="bookingsEditStatus">Միացված է</span>
                             </div>
                         </div>
 
                         <!-- Users Permissions -->
                         <div class="permission-item">
-                            <div class="permission-name">👥 Users Page</div>
+                            <div class="permission-name">👥Օգտատերերի էջ</div>
                             <div class="permission-controls">
-                                <span class="permission-label">View:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'view', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'view', false)">Disable</button>
-                                <span class="permission-status permission-disabled" id="usersViewStatus">Disabled</span>
+                                <span class="permission-label">Դիտել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'view', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'view', false)">Անջատել</button>
+                                <span class="permission-status permission-disabled" id="usersViewStatus">Անջատված է</span>
                             </div>
                         </div>
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span class="permission-label">Edit:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'edit', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'edit', false)">Disable</button>
-                                <span class="permission-status permission-disabled" id="usersEditStatus">Disabled</span>
+                                <span class="permission-label">Խմբագրել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'edit', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'edit', false)">Անջատել</button>
+                                <span class="permission-status permission-disabled" id="usersEditStatus">Անջատված է</span>
                             </div>
                         </div>
 
                         <!-- Services Permissions -->
                         <div class="permission-item">
-                            <div class="permission-name">✂️ Services Page</div>
+                            <div class="permission-name">✂️ Ծառայությունների էջ</div>
                             <div class="permission-controls">
-                                <span class="permission-label">View:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'view', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'view', false)">Disable</button>
-                                <span class="permission-status permission-disabled" id="servicesViewStatus">Disabled</span>
+                                <span class="permission-label">Դիտել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'view', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'view', false)">Անջատել</button>
+                                <span class="permission-status permission-disabled" id="servicesViewStatus">Անջատված է</span>
                             </div>
                         </div>
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span class="permission-label">Edit:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'edit', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'edit', false)">Disable</button>
-                                <span class="permission-status permission-disabled" id="servicesEditStatus">Disabled</span>
+                                <span class="permission-label">Խմբագրել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'edit', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'edit', false)">Անջատել</button>
+                                <span class="permission-status permission-disabled" id="servicesEditStatus">Անջատված է</span>
                             </div>
                         </div>
 
                         <!-- Settings Permissions -->
                         <div class="permission-item">
-                            <div class="permission-name">⚙️ Settings Page</div>
+                            <div class="permission-name">⚙️ Կարգավորումների էջ</div>
                             <div class="permission-controls">
-                                <span class="permission-label">View Only:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'view', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'view', false)">Disable</button>
-                                <span class="permission-status permission-disabled" id="settingsViewStatus">Disabled</span>
+                                <span class="permission-label">Միայն դիտել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'view', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'view', false)">Անջատել</button>
+                                <span class="permission-status permission-disabled" id="settingsViewStatus">Անջատված է</span>
                             </div>
                         </div>
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span class="permission-label">Edit Only:</span>
-                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'edit', true)">Enable</button>
-                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'edit', false)">Disable</button>
-                                <span class="permission-status permission-disabled" id="settingsEditStatus">Disabled</span>
+                                <span class="permission-label">Միայն խմբագրել</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'edit', true)">Միացնել</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'edit', false)">Անջատել</button>
+                                <span class="permission-status permission-disabled" id="settingsEditStatus">Անջատված է</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button type="submit" class="btn btn-primary">Save Moderator</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeModal('moderatorModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Պահպանել</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('moderatorModal')">Չեղարկել</button>
                 </div>
             </form>
         </div>
@@ -1230,10 +1230,10 @@
     <div id="deleteModal" class="delete-modal">
         <div class="delete-modal-content">
             <div class="delete-modal-icon">⚠️</div>
-            <div class="delete-modal-title">Are you sure you want to delete?</div>
+            <div class="delete-modal-title">Վստա՞հ եք, որ ուզում եք ջնջել։</div>
             <div class="delete-modal-buttons">
-                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Չեղարկել</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Ջնջել</button>
             </div>
         </div>
     </div>
@@ -1242,10 +1242,10 @@
     <div id="exitModal" class="delete-modal">
         <div class="delete-modal-content">
             <div class="delete-modal-icon">🚪</div>
-            <div class="delete-modal-title">Are you sure you want to exit?</div>
+            <div class="delete-modal-title">Վստա՞հ եք, որ ուզում եք դուրս գալ։</div>
             <div class="delete-modal-buttons">
-                <button class="btn btn-secondary" onclick="closeExitModal()">Cancel</button>
-                <button class="btn btn-danger" onclick="confirmExit()">Exit</button>
+                <button class="btn btn-secondary" onclick="closeExitModal()">Չեղարկել</button>
+                <button class="btn btn-danger" onclick="confirmExit()">Ելք</button>
             </div>
         </div>
     </div>
@@ -1302,7 +1302,7 @@
                 try {
                     return JSON.parse(localStorage.getItem('barbershop_data'));
                 } catch (error) {
-                    console.error('Error parsing data:', error);
+                    console.error('Տվյալների վերլուծման սխալ', error);
                     this.initializeData();
                     return JSON.parse(localStorage.getItem('barbershop_data'));
                 }
@@ -1312,7 +1312,7 @@
                 try {
                     localStorage.setItem('barbershop_data', JSON.stringify(data));
                 } catch (error) {
-                    console.error('Error saving data:', error);
+                    console.error('Տվյալների պահպանման սխալ', error);
                     showNotification('Error saving data!', 'error');
                 }
             }
@@ -1428,7 +1428,7 @@
         function updatePermissionStatus(section, type, enabled) {
             const statusElement = document.getElementById(`${section}${type.charAt(0).toUpperCase() + type.slice(1)}Status`);
             if (statusElement) {
-                statusElement.textContent = enabled ? 'Enabled' : 'Disabled';
+                statusElement.textContent = enabled ? 'Միացված է' : 'Անջատված է';
                 statusElement.className = `permission-status ${enabled ? 'permission-enabled' : 'permission-disabled'}`;
             }
         }
@@ -1473,35 +1473,35 @@
                             dataManager.deleteService(id);
                             loadServices();
                             loadDashboardData();
-                            showNotification('Service deleted successfully!', 'success');
+                            showNotification('Ծառայությունը հաջողությամբ ջնջվեց։', 'success');
                             break;
                         case 'user':
                             dataManager.deleteUser(id);
                             loadUsers();
                             loadDashboardData();
-                            showNotification('User deleted successfully!', 'success');
+                            showNotification('Օգտատերը հաջողությամբ ջնջվեց։', 'success');
                             break;
                         case 'moderator':
                             const data = dataManager.getData();
                             data.moderators = data.moderators.filter(m => m.id !== id);
                             dataManager.saveData(data);
                             loadModerators();
-                            showNotification('Moderator deleted!', 'success');
+                            showNotification('Մոդերատորը ջնջվեց։', 'success');
                             break;
                         case 'backup':
                             let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
                             backups = backups.filter(b => b.id !== id);
                             localStorage.setItem('barbershop_backups', JSON.stringify(backups));
                             loadBackups();
-                            showNotification('Backup deleted!', 'success');
+                            showNotification('Backup-ը ջնջված է։', 'success');
                             break;
                         case 'bot':
                             deleteBot();
                             break;
                     }
                 } catch (error) {
-                    console.error('Error during deletion:', error);
-                    showNotification('Error occurred during deletion!', 'error');
+                    console.error('Սխալ ջնջման ժամանակ', error);
+                    showNotification('Ջնջման ժամանակ սխալ տեղի ունեցավ։', 'error');
                 }
             };
             
@@ -1526,14 +1526,14 @@
             const password = document.getElementById('password').value;
 
             if (!password.trim()) {
-                showNotification('Please enter a password!', 'error');
+                showNotification('Խնդրում ենք մուտքագրել գաղտնաբառ', 'error');
                 return;
             }
 
             if (userType === 'admin' && password === ADMIN_PASSWORD) {
                 currentUser = { type: 'admin', name: 'Administrator' };
                 showDashboard();
-                showNotification('Welcome, Administrator!', 'success');
+                showNotification('Բարի գալուստ, Ադմինիստրատոր', 'success');
             } else if (userType === 'moderator') {
                 const data = dataManager.getData();
                 const moderator = data.moderators.find(m => m.password === password && m.enabled);
@@ -1544,15 +1544,15 @@
                         permissions: moderator.permissions 
                     };
                     showDashboard();
-                    showNotification(`Welcome, ${moderator.name}!`, 'success');
+                    showNotification(`Բարի գալուստ, ${moderator.name}!`, 'success');
                     
                     // Apply permission restrictions
                     applyModeratorPermissions(moderator.permissions);
                 } else {
-                    showNotification('Invalid moderator credentials or account disabled!', 'error');
+                    showNotification('Մոդերատորի մուտքագրումները սխալ են, կամ հաշիվը անջատված է։', 'error');
                 }
             } else {
-                showNotification('Invalid credentials!', 'error');
+                showNotification('Անվավեր մուտքագրման տվյալներ։', 'error');
             }
         }
 
@@ -1604,7 +1604,7 @@
                 item.style.display = 'block';
             });
             
-            showNotification('You have been logged out successfully', 'success');
+            showNotification('Դուք հաջողությամբ դուրս եք եկել հաշվից', 'success');
         }
 
         function showDashboard() {
@@ -1617,7 +1617,7 @@
         function showPage(pageId) {
             // Check permissions for moderators
             if (currentUser.type === 'moderator' && !checkPermission(pageId, 'view')) {
-                showNotification('You do not have permission to view this page!', 'error');
+                showNotification('Դուք չունեք այս էջը դիտելու թույլտվություն։', 'error');
                 return;
             }
 
@@ -1656,12 +1656,12 @@
                 document.getElementById('totalServices').textContent = data.services.length;
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
-                showNotification('Error loading dashboard data!', 'error');
+                showNotification('Սխալ առաջացավ վահանակի տվյալները բեռնելիս', 'error');
             }
         }
 
         function filterStats(period) {
-            showNotification(`Filtered stats by ${period}`, 'success');
+            showNotification(`Զտված վիճակագրություն ըստ ${period}`, 'success');
         }
 
         // Services Management
@@ -1684,10 +1684,10 @@
                     const row = document.createElement('tr');
                     const actionsHtml = canEdit ? `
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-primary" onclick="editService(${service.id})">Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('service', ${service.id}, '${service.name}')">Delete</button>
+                            <button class="btn btn-sm btn-primary" onclick="editService(${service.id})">Խմբագրել</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('service', ${service.id}, '${service.name}')">Ջնջել</button>
                         </div>
-                    ` : '<span class="text-secondary">View Only</span>';
+                    ` : '<span class="text-secondary">Միայն դիտել</span>';
 
                     row.innerHTML = `
                         <td>${service.name}</td>
@@ -1700,13 +1700,13 @@
                 });
             } catch (error) {
                 console.error('Error loading services:', error);
-                showNotification('Error loading services!', 'error');
+                showNotification('Սխալ առաջացավ ծառայությունների բեռնման ժամանակ', 'error');
             }
         }
 
         function openServiceModal(serviceId = null) {
             if (!checkPermission('services', 'edit')) {
-                showNotification('You do not have permission to edit services!', 'error');
+                showNotification('Դուք չունեք ծառայությունները խմբագրելու թույլտվություն', 'error');
                 return;
             }
 
@@ -1749,11 +1749,11 @@
                     const row = document.createElement('tr');
                     const actionsHtml = canEdit ? `
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('user', ${user.id}, '${user.name}')">Delete</button>
-                            <button class="btn btn-sm btn-warning" onclick="blockUser(${user.id})">Block</button>
+                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Խմբագրել</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('user', ${user.id}, '${user.name}')">Ջնջել</button>
+                            <button class="btn btn-sm btn-warning" onclick="blockUser(${user.id})">Արգելափակել</button>
                         </div>
-                    ` : '<span class="text-secondary">View Only</span>';
+                    ` : '<span class="text-secondary">Միայն դիտել</span>';
 
                     row.innerHTML = `
                         <td>${user.name}</td>
@@ -1773,7 +1773,7 @@
 
         function editUser(id) {
             if (!checkPermission('users', 'edit')) {
-                showNotification('You do not have permission to edit users!', 'error');
+                showNotification('Դուք չունեք օգտատերերին խմբագրելու թույլտվություն։', 'error');
                 return;
             }
 
@@ -1791,7 +1791,7 @@
 
         function blockUser(id) {
             if (!checkPermission('users', 'edit')) {
-                showNotification('You do not have permission to block users!', 'error');
+                showNotification('Դուք չունեք օգտատերերին արգելափակելու թույլտվություն։', 'error');
                 return;
             }
 
@@ -1815,10 +1815,10 @@
                     const row = document.createElement('tr');
                     const actionsHtml = canEdit ? `
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-success" onclick="acceptBooking(${booking.id})">Accept</button>
-                            <button class="btn btn-sm btn-danger" onclick="declineBooking(${booking.id})">Decline</button>
+                            <button class="btn btn-sm btn-success" onclick="acceptBooking(${booking.id})">Ընդունել</button>
+                            <button class="btn btn-sm btn-danger" onclick="declineBooking(${booking.id})">Մերժել</button>
                         </div>
-                    ` : '<span class="text-secondary">View Only</span>';
+                    ` : '<span class="text-secondary">Միայն դիտել</span>';
 
                     row.innerHTML = `
                         <td>${user ? user.name : 'Unknown'}</td>
@@ -1832,19 +1832,19 @@
                 });
             } catch (error) {
                 console.error('Error loading bookings:', error);
-                showNotification('Error loading bookings!', 'error');
+                showNotification('Սխալ առաջացավ ամրագրումների բեռնման ժամանակ։', 'error');
             }
         }
 
         function acceptBooking(id) {
             if (!checkPermission('bookings', 'edit')) {
-                showNotification('You do not have permission to modify bookings!', 'error');
+                showNotification('Դուք չունեք ամրագրումները փոփոխելու թույլտվություն։', 'error');
                 return;
             }
 
             dataManager.updateBooking(id, { status: 'confirmed' });
             loadBookings();
-            showNotification('Booking accepted!', 'success');
+            showNotification('Պատվերն ընդունվում է!', 'success');
             
             // Send confirmation to user via Telegram
             const data = dataManager.getData();
@@ -1852,20 +1852,20 @@
             if (booking) {
                 const user = data.users.find(u => u.id === booking.userId);
                 if (user && user.telegramId) {
-                    sendTelegramMessage(user.telegramId, '✅ Your booking is confirmed!');
+                    sendTelegramMessage(user.telegramId, '✅ Ձեր ամրագրումը հաստատված է!');
                 }
             }
         }
 
         function declineBooking(id) {
             if (!checkPermission('bookings', 'edit')) {
-                showNotification('You do not have permission to modify bookings!', 'error');
+                showNotification('Դուք չունեք ամրագրումները փոփոխելու թույլտվություն։', 'error');
                 return;
             }
 
             dataManager.updateBooking(id, { status: 'declined' });
             loadBookings();
-            showNotification('Booking declined!', 'warning');
+            showNotification('Ամրագրումը մերժվեց:', 'warning');
         }
 
         // Settings Management
@@ -1905,13 +1905,13 @@
                 loadBotConfiguration();
             } catch (error) {
                 console.error('Error loading settings:', error);
-                showNotification('Error loading settings!', 'error');
+                showNotification('Կարգավորումները բեռնելիս սխալ առաջացավ', 'error');
             }
         }
 
         function saveContentSettings() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to edit settings!', 'error');
+                showNotification('Դուք չունեք կարգավորումները խմբագրելու թույլտվություն', 'error');
                 return;
             }
 
@@ -1922,16 +1922,16 @@
                 data.settings.businessPhone = document.getElementById('businessPhone').value;
                 data.settings.workingHours = document.getElementById('workingHours').value;
                 dataManager.saveData(data);
-                showNotification('Content settings saved!', 'success');
+                showNotification('Բովանդակության կարգավորումները պահպանված են', 'success');
             } catch (error) {
                 console.error('Error saving content settings:', error);
-                showNotification('Error saving content settings!', 'error');
+                showNotification('Սխալ առաջացավ բովանդակության կարգավորումները պահպանելիս։', 'error');
             }
         }
 
         function saveBonusSettings() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to edit settings!', 'error');
+                showNotification('Դուք չունեք կարգավորումները խմբագրելու թույլտվություն', 'error');
                 return;
             }
 
@@ -1940,16 +1940,16 @@
                 data.settings.bonusPerService = parseInt(document.getElementById('bonusPerService').value) || 0;
                 data.settings.bonusValue = parseInt(document.getElementById('bonusValue').value) || 0;
                 dataManager.saveData(data);
-                showNotification('Bonus settings saved!', 'success');
+                showNotification('Բոնուսային կարգավորումները պահպանված են', 'success');
             } catch (error) {
                 console.error('Error saving bonus settings:', error);
-                showNotification('Error saving bonus settings!', 'error');
+                showNotification('Բոնուսային կարգավորումները պահպանելիս սխալ առաջացավ', 'error');
             }
         }
 
         function toggleBonusSystem(enabled) {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to edit settings!', 'error');
+                showNotification('Դուք չունեք կարգավորումները խմբագրելու թույլտվություն', 'error');
                 return;
             }
 
@@ -1957,10 +1957,10 @@
                 const data = dataManager.getData();
                 data.settings.bonusEnabled = enabled;
                 dataManager.saveData(data);
-                showNotification(`Bonus system ${enabled ? 'enabled' : 'disabled'}!`, 'success');
+                showNotification(`Բոնուսային համակարգ ${enabled ? 'enabled' : 'disabled'}!`, 'success');
             } catch (error) {
                 console.error('Error toggling bonus system:', error);
-                showNotification('Error updating bonus system!', 'error');
+                showNotification('Բոնուսային համակարգը թարմացնելիս սխալ առաջացավ', 'error');
             }
         }
 
@@ -1993,32 +1993,32 @@
 
                     const actionsHtml = canEdit ? `
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-primary" onclick="editModerator(${moderator.id})">Edit</button>
+                            <button class="btn btn-sm btn-primary" onclick="editModerator(${moderator.id})">Խմբագրել</button>
                             <button class="btn btn-sm btn-${moderator.enabled ? 'warning' : 'success'}" onclick="toggleModerator(${moderator.id})">
                                 ${moderator.enabled ? 'Disable' : 'Enable'}
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('moderator', ${moderator.id}, '${moderator.name}')">Delete</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('moderator', ${moderator.id}, '${moderator.name}')">Ջնջել</button>
                         </div>
-                    ` : '<span class="text-secondary">View Only</span>';
+                    ` : '<span class="text-secondary">Միայն դիտել</span>';
 
                     div.innerHTML = `
                         <h4>${moderator.name}</h4>
                         <p>Phone: ${moderator.phone}</p>
                         <p>Status: <span class="status-badge status-${moderator.enabled ? 'active' : 'blocked'}">${moderator.enabled ? 'Active' : 'Disabled'}</span></p>
-                        <p>Permissions: ${permissionsSummary || '<small>No permissions assigned</small>'}</p>
+                        <p>Permissions: ${permissionsSummary || '<small>Թույլտվություններ չեն նշանակվել</small>'}</p>
                         ${actionsHtml}
                     `;
                     container.appendChild(div);
                 });
             } catch (error) {
                 console.error('Error loading moderators:', error);
-                showNotification('Error loading moderators!', 'error');
+                showNotification('Մոդերատորների բեռնման սխալ', 'error');
             }
         }
 
         function openModeratorModal(moderatorId = null) {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to manage moderators!', 'error');
+                showNotification('Դուք չունեք մոդերատորներ կառավարելու թույլտվություն', 'error');
                 return;
             }
 
@@ -2034,12 +2034,12 @@
                     document.getElementById('moderatorPhone').value = moderator.phone;
                     document.getElementById('moderatorPassword').value = moderator.password;
                     loadPermissionsInModal(moderator.permissions);
-                    title.textContent = 'Edit Moderator';
+                    title.textContent = 'Մոդերատոր խմբագրել';
                 }
             } else {
                 document.getElementById('moderatorForm').reset();
                 loadPermissionsInModal(null);
-                title.textContent = 'Add Moderator';
+                title.textContent = 'Մոդերատոր ավելացնել';
             }
             
             modal.classList.add('active');
@@ -2051,7 +2051,7 @@
 
         function toggleModerator(id) {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to manage moderators!', 'error');
+                showNotification('Դուք չունեք մոդերատորներ կառավարելու թույլտվություն', 'error');
                 return;
             }
 
@@ -2062,17 +2062,17 @@
                     moderator.enabled = !moderator.enabled;
                     dataManager.saveData(data);
                     loadModerators();
-                    showNotification(`Moderator ${moderator.enabled ? 'enabled' : 'disabled'}!`, 'success');
+                    showNotification(`Մոդերատոր ${moderator.enabled ? 'enabled' : 'disabled'}!`, 'success');
                 }
             } catch (error) {
                 console.error('Error toggling moderator:', error);
-                showNotification('Error updating moderator status!', 'error');
+                showNotification('Մոդերատորի կարգավիճակը թարմացնելիս սխալ առաջացավ', 'error');
             }
         }
 
         function createBackup() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to create backups!', 'error');
+                showNotification('Դուք չունեք պահուստային պատճեններ ստեղծելու թույլտվություն', 'error');
                 return;
             }
 
@@ -2103,10 +2103,10 @@
                 
                 // Update UI
                 loadBackups();
-                showNotification('Backup created successfully!', 'success');
+                showNotification('Backup-ը հաջողությամբ ստեղծվեց։', 'success');
             } catch (error) {
                 console.error('Error creating backup:', error);
-                showNotification('Error creating backup!', 'error');
+                showNotification('Սխալ առաջացավ backup-ը ստեղծելիս', 'error');
             }
         }
 
@@ -2125,19 +2125,19 @@
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    showNotification('Backup downloaded!', 'success');
+                    showNotification('Backup-ը ներբեռնվել է', 'success');
                 } else {
-                    showNotification('Backup not found!', 'error');
+                    showNotification('Backup-ը չի գտնվել!', 'error');
                 }
             } catch (error) {
                 console.error('Error downloading backup:', error);
-                showNotification('Error downloading backup!', 'error');
+                showNotification('Backup-ը ներբեռնելիս սխալ առաջացավ։!', 'error');
             }
         }
 
         function importBackup() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to import backups!', 'error');
+                showNotification('Դուք չունեք Backup ներմուծելու թույլտվություն', 'error');
                 return;
             }
 
@@ -2158,7 +2158,7 @@
                             }
                             
                             dataManager.saveData(backup);
-                            showNotification('Backup imported successfully!', 'success');
+                            showNotification('Backup-ը հաջողությամբ ներմուծվեց։', 'success');
                             loadDashboardData();
                             
                             // Refresh current page
@@ -2166,7 +2166,7 @@
                             showPage(currentPage);
                         } catch (error) {
                             console.error('Error importing backup:', error);
-                            showNotification('Invalid backup file!', 'error');
+                            showNotification('Անվավեր Backup ֆայլ', 'error');
                         }
                     };
                     reader.readAsText(file);
@@ -2187,12 +2187,12 @@
                     const row = document.createElement('tr');
                     const actionsHtml = canEdit ? `
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
-                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('backup', ${backup.id}, '${backup.name}')">Delete</button>
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Ներբեռնել</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('backup', ${backup.id}, '${backup.name}')">Ջնջել</button>
                         </div>
                     ` : `
                         <div class="action-buttons">
-                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Ներբեռնել</button>
                         </div>
                     `;
 
@@ -2207,7 +2207,7 @@
                 });
             } catch (error) {
                 console.error('Error loading backups:', error);
-                showNotification('Error loading backups!', 'error');
+                showNotification('Սխալ առաջացավ Backup-ը բեռնելիս։!', 'error');
             }
         }
 
@@ -2219,17 +2219,17 @@
 
         function changePassword() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to change passwords!', 'error');
+                showNotification('Դուք գաղտնաբառերը փոխելու թույլտվություն չունեք։', 'error');
                 return;
             }
 
             const newPassword = document.getElementById('newPassword').value;
             if (newPassword.length < 8) {
-                showNotification('Password must be at least 8 characters!', 'error');
+                showNotification('Գաղտնաբառը պետք է լինի առնվազն 8 նիշ։', 'error');
                 return;
             }
             // In a real application, you would update the password in a secure way
-            showNotification('Password changed successfully!', 'success');
+            showNotification('Գաղտնաբառը հաջողությամբ փոխվեց', 'success');
             document.getElementById('newPassword').value = '';
         }
 
@@ -2258,13 +2258,13 @@
                 
                 const result = await response.json();
                 if (!result.ok) {
-                    throw new Error(result.description || 'Failed to send message');
+                    throw new Error(result.description || 'Չհաջողվեց ուղարկել հաղորդագրությունը');
                 }
                 
                 return result;
             } catch (error) {
-                console.error('Error sending Telegram message:', error);
-                logBotActivity(`Error sending message: ${error.message}`);
+                console.error('Telegram-ի հաղորդագրությունը ուղարկելիս սխալ առաջացավ։', error);
+                logBotActivity(`Հաղորդագրությունն ուղարկելու սխալ ${error.message}`);
                 return null;
             }
         }
@@ -2275,20 +2275,20 @@
 
         async function importBotAPI() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to manage bot settings!', 'error');
+                showNotification('Դուք չունեք բոտի կարգավորումները կառավարելու թույլտվություն', 'error');
                 return;
             }
 
             const token = document.getElementById('botToken').value.trim();
             
             if (!token) {
-                showNotification('Please enter a bot token!', 'error');
+                showNotification('Խնդրում ենք մուտքագրել Bot Token', 'error');
                 return;
             }
             
             // Validate token format
             if (!token.match(/^\d+:[A-Za-z0-9_-]+$/)) {
-                showNotification('Invalid bot token format!', 'error');
+                showNotification('Անվավեր Bot Token ձևաչափ', 'error');
                 return;
             }
             
@@ -2296,7 +2296,7 @@
                 // Show loading state
                 const importBtn = document.querySelector('button[onclick="importBotAPI()"]');
                 const originalText = importBtn.textContent;
-                importBtn.textContent = 'Connecting...';
+                importBtn.textContent = 'Միանում է...';
                 importBtn.disabled = true;
                 
                 // Test the bot token
@@ -2309,7 +2309,7 @@
                     
                     // Update UI
                     document.getElementById('botUsername').value = `@${botInfo.username}`;
-                    document.getElementById('botStatus').textContent = 'Connected';
+                    document.getElementById('botStatus').textContent = 'Միացված է';
                     document.getElementById('botStatus').className = 'status-badge status-active';
                     document.getElementById('botConfigPanel').style.display = 'block';
                     
@@ -2330,12 +2330,12 @@
                     // Start polling for updates (simulation)
                     startBotPolling(token);
                     
-                    showNotification(`Bot "${botInfo.first_name}" connected successfully!`, 'success');
-                    logBotActivity(`Bot connected: ${botInfo.first_name} (@${botInfo.username})`);
+                    showNotification(`Bot-ը "${botInfo.first_name}" հաջողությամբ միացված է`, 'success');
+                    logBotActivity(`Բոտը միացված է ${botInfo.first_name} (@${botInfo.username})`);
                     
                 } else {
-                    showNotification(`Bot API Error: ${data.description}`, 'error');
-                    logBotActivity(`Connection failed: ${data.description}`);
+                    showNotification(`Bot API Սխալ: ${data.description}`, 'error');
+                    logBotActivity(`Կապը ձախողվեց ${data.description}`);
                 }
                 
                 // Reset button state
@@ -2344,22 +2344,22 @@
                 
             } catch (error) {
                 showNotification('Failed to connect to Telegram API!', 'error');
-                logBotActivity(`Connection error: ${error.message}`);
-                console.error('Bot connection error:', error);
+                logBotActivity(`Միացման սխալ ${error.message}`);
+                console.error('Bot-ի միացման սխալ', error);
                 
                 // Reset button state
                 const importBtn = document.querySelector('button[onclick="importBotAPI()"]');
-                importBtn.textContent = 'Import Bot API';
+                importBtn.textContent = 'Ներմուծել Bot API-ն';
                 importBtn.disabled = false;
             }
         }
 
         async function setupBotCommands(token) {
             const commands = [
-                { command: 'start', description: 'Start the bot and see main menu' },
-                { command: 'services', description: 'View available services' },
-                { command: 'book', description: 'Book an appointment' },
-                { command: 'help', description: 'Get help and contact information' }
+                { command: 'start', description: 'Գործարկեք բոտը և դիտեք ծառայությունների ցանկը' },
+                { command: 'services', description: 'Դիտել հասանելի ծառայությունները' },
+                { command: 'book', description: 'Ամրագրեք հանդիպում' },
+                { command: 'help', description: 'Ստացեք օգնություն և կոնտակտային տեղեկություններ' }
             ];
             
             try {
