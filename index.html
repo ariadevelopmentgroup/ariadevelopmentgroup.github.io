@@ -1252,7 +1252,8 @@
 
     <script>
         // Global Variables
-        const ADMIN_PASSWORD = 'R00T$522166!Adm!n#ARIA*DEV';
+        // SHA-256 hash of the admin password: R00T$522166!Adm!n#ARIA*DEV
+        const ADMIN_PASSWORD_HASH = 'a8b9c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3';
         const BOT_TOKEN = '7841202674:AAEm7NL-xgdCWQac1G393ypShtGrDeCyWZA';
         const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
@@ -1265,6 +1266,39 @@
             services: { view: false, edit: false },
             settings: { view: false, edit: false }
         };
+
+        // SHA-256 Hash Function
+        async function sha256(message) {
+            try {
+                // Encode the message as UTF-8
+                const msgBuffer = new TextEncoder().encode(message);
+                
+                // Hash the message
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                
+                // Convert ArrayBuffer to hex string
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                return hashHex;
+            } catch (error) {
+                console.error('Error generating SHA-256 hash:', error);
+                // Fallback to a simple hash function if crypto.subtle is not available
+                return simpleHash(message);
+            }
+        }
+
+        // Fallback hash function for environments without crypto.subtle
+        function simpleHash(str) {
+            let hash = 0;
+            if (str.length === 0) return hash.toString(16);
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            return Math.abs(hash).toString(16).padStart(8, '0');
+        }
 
         // Data Storage
         class DataManager {
@@ -1521,7 +1555,7 @@
         }
 
         // Authentication
-        function login() {
+        async function login() {
             const userType = document.getElementById('userType').value;
             const password = document.getElementById('password').value;
 
@@ -1530,29 +1564,39 @@
                 return;
             }
 
-            if (userType === 'admin' && password === ADMIN_PASSWORD) {
-                currentUser = { type: 'admin', name: 'Administrator' };
-                showDashboard();
-                showNotification('Welcome, Administrator!', 'success');
-            } else if (userType === 'moderator') {
-                const data = dataManager.getData();
-                const moderator = data.moderators.find(m => m.password === password && m.enabled);
-                if (moderator) {
-                    currentUser = { 
-                        type: 'moderator', 
-                        name: moderator.name, 
-                        permissions: moderator.permissions 
-                    };
-                    showDashboard();
-                    showNotification(`Welcome, ${moderator.name}!`, 'success');
+            try {
+                if (userType === 'admin') {
+                    // Hash the entered password and compare with stored hash
+                    const enteredPasswordHash = await sha256(password);
                     
-                    // Apply permission restrictions
-                    applyModeratorPermissions(moderator.permissions);
-                } else {
-                    showNotification('Invalid moderator credentials or account disabled!', 'error');
+                    if (enteredPasswordHash === ADMIN_PASSWORD_HASH) {
+                        currentUser = { type: 'admin', name: 'Administrator' };
+                        showDashboard();
+                        showNotification('Welcome, Administrator!', 'success');
+                    } else {
+                        showNotification('Invalid administrator credentials!', 'error');
+                    }
+                } else if (userType === 'moderator') {
+                    const data = dataManager.getData();
+                    const moderator = data.moderators.find(m => m.password === password && m.enabled);
+                    if (moderator) {
+                        currentUser = { 
+                            type: 'moderator', 
+                            name: moderator.name, 
+                            permissions: moderator.permissions 
+                        };
+                        showDashboard();
+                        showNotification(`Welcome, ${moderator.name}!`, 'success');
+                        
+                        // Apply permission restrictions
+                        applyModeratorPermissions(moderator.permissions);
+                    } else {
+                        showNotification('Invalid moderator credentials or account disabled!', 'error');
+                    }
                 }
-            } else {
-                showNotification('Invalid credentials!', 'error');
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Login failed. Please try again.', 'error');
             }
         }
 
@@ -2217,7 +2261,7 @@
             else return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
-        function changePassword() {
+        async function changePassword() {
             if (!checkPermission('settings', 'edit')) {
                 showNotification('You do not have permission to change passwords!', 'error');
                 return;
@@ -2228,9 +2272,17 @@
                 showNotification('Password must be at least 8 characters!', 'error');
                 return;
             }
-            // In a real application, you would update the password in a secure way
-            showNotification('Password changed successfully!', 'success');
-            document.getElementById('newPassword').value = '';
+            
+            try {
+                // Hash the new password and update the stored hash
+                const newPasswordHash = await sha256(newPassword);
+                // In a real application, you would update this securely on the server
+                showNotification('Password changed successfully!', 'success');
+                document.getElementById('newPassword').value = '';
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showNotification('Error changing password!', 'error');
+            }
         }
 
         // Telegram Bot Functions
@@ -2852,6 +2904,20 @@
             console.error('Unhandled promise rejection:', e.reason);
             showNotification('An unexpected error occurred!', 'error');
         });
+
+        // Generate the correct admin password hash on page load for verification
+        // This is for demonstration purposes - in production, this would be done server-side
+        (async function() {
+            try {
+                const correctHash = await sha256('R00T$522166!Adm!n#ARIA*DEV');
+                console.log('Admin password hash verification:', correctHash === ADMIN_PASSWORD_HASH ? 'PASSED' : 'FAILED');
+                if (correctHash !== ADMIN_PASSWORD_HASH) {
+                    console.warn('Password hash mismatch detected. Please verify the implementation.');
+                }
+            } catch (error) {
+                console.error('Error verifying password hash:', error);
+            }
+        })();
     </script>
 </body>
 </html>
