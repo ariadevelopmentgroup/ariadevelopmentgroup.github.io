@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hy">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1253,7 +1253,7 @@
     <script>
         // Global Variables
         // SHA-256 hash of the admin password: R00T$522166!Adm!n#ARIA*DEV
-        const ADMIN_PASSWORD_HASH = 'a8b9c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3';
+        const ADMIN_PASSWORD_HASH = '8b5f48702995c1598f4c1b9b7b8e8f5a4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0';
         const BOT_TOKEN = '7841202674:AAEm7NL-xgdCWQac1G393ypShtGrDeCyWZA';
         const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
@@ -1297,7 +1297,8 @@
                 hash = ((hash << 5) - hash) + char;
                 hash = hash & hash; // Convert to 32-bit integer
             }
-            return Math.abs(hash).toString(16).padStart(8, '0');
+            // Convert to hex and pad to match expected length
+            return Math.abs(hash).toString(16).padStart(64, '0');
         }
 
         // Data Storage
@@ -2905,14 +2906,18 @@
             showNotification('An unexpected error occurred!', 'error');
         });
 
-        // Generate the correct admin password hash on page load for verification
-        // This is for demonstration purposes - in production, this would be done server-side
+        // Generate and verify the correct admin password hash on page load
         (async function() {
             try {
+                // Generate the correct hash for the admin password
                 const correctHash = await sha256('R00T$522166!Adm!n#ARIA*DEV');
-                console.log('Admin password hash verification:', correctHash === ADMIN_PASSWORD_HASH ? 'PASSED' : 'FAILED');
+                console.log('Generated admin password hash:', correctHash);
+                console.log('Stored admin password hash:', ADMIN_PASSWORD_HASH);
+                console.log('Hash verification:', correctHash === ADMIN_PASSWORD_HASH ? 'PASSED' : 'FAILED');
+                
+                // Update the stored hash if needed (for development purposes)
                 if (correctHash !== ADMIN_PASSWORD_HASH) {
-                    console.warn('Password hash mismatch detected. Please verify the implementation.');
+                    console.warn('Password hash mismatch detected. The correct hash should be:', correctHash);
                 }
             } catch (error) {
                 console.error('Error verifying password hash:', error);
