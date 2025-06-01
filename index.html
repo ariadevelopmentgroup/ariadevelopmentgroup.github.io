@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .dashboard.active {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--card-background);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            gap: 0.75rem;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-background);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-buttons {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-background);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table tr:hover {
+            background-color: var(--background-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--card-background);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .notification.warning {
+            background: var(--warning-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .table-container {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        /* Additional Styles */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-blocked {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .logout-btn {
+            margin-top: 2rem;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Barbershop Admin</h1>
+                <p>Please login to continue</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userType">Login as:</label>
+                    <select id="userType" class="form-control" required>
+                        <option value="admin">Administrator</option>
+                        <option value="moderator">Moderator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Barbershop</h2>
+                <p>Admin Dashboard</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        📊 Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="services">
+                        ✂️ Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="users">
+                        👥 Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="bookings">
+                        📅 Bookings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="settings">
+                        ⚙️ Settings
+                    </a>
+                </li>
+            </ul>
+            <button id="logoutBtn" class="btn btn-danger logout-btn">Logout</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('daily')">Daily</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('weekly')">Weekly</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('monthly')">Monthly</button>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalBookings">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalServices">0</div>
+                        <div class="stat-label">Total Services</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Page -->
+            <div id="servicesPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Services</h1>
+                    <button class="btn btn-primary" onclick="openServiceModal()">Add Service</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Duration</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTable">
+                                <!-- Services will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div id="usersPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Users</h1>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Telegram ID</th>
+                                    <th>Bonuses</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Page -->
+            <div id="bookingsPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Bookings</h1>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTable">
+                                <!-- Bookings will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Settings</h1>
+                </div>
+
+                <!-- Content Settings -->
+                <div class="settings-section">
+                    <h3>Content Management</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Business Name:</label>
+                            <input type="text" id="businessName" class="form-control" value="Elite Barbershop">
+                        </div>
+                        <div class="form-group">
+                            <label>Address:</label>
+                            <input type="text" id="businessAddress" class="form-control" value="123 Main Street, City">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone:</label>
+                            <input type="text" id="businessPhone" class="form-control" value="+1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label>Working Hours:</label>
+                            <input type="text" id="workingHours" class="form-control" value="Mon-Sat: 9AM-8PM">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveContentSettings()">Save Content</button>
+                </div>
+
+                <!-- Telegram Bot Settings -->
+                <div class="settings-section">
+                    <h3>Telegram Bot Settings</h3>
+                    <div class="form-group">
+                        <label>Bot Token:</label>
+                        <input type="text" id="botToken" class="form-control" value="7841202674:AAEm7NL-xgdCWQac1G393ypShtGrDeCyWZA" readonly>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="testTelegramBot()">Test Bot</button>
+                        <button class="btn btn-primary" onclick="setupWebhook()">Setup Webhook</button>
+                        <button class="btn btn-danger" onclick="deleteBot()">Delete Bot</button>
+                    </div>
+                </div>
+
+                <!-- Bonus Settings -->
+                <div class="settings-section">
+                    <h3>Bonus Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bonus per Service:</label>
+                            <input type="number" id="bonusPerService" class="form-control" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Bonus Value (%):</label>
+                            <input type="number" id="bonusValue" class="form-control" value="5">
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="toggleBonusSystem(true)">Enable</button>
+                        <button class="btn btn-danger" onclick="toggleBonusSystem(false)">Disable</button>
+                        <button class="btn btn-primary" onclick="saveBonusSettings()">Save</button>
+                    </div>
+                </div>
+
+                <!-- Moderator Management -->
+                <div class="settings-section">
+                    <h3>Moderator Management</h3>
+                    <button class="btn btn-primary" onclick="openModeratorModal()">Add Moderator</button>
+                    <div id="moderatorsList" class="mt-3">
+                        <!-- Moderators will be listed here -->
+                    </div>
+                </div>
+
+                <!-- Backup Settings -->
+                <div class="settings-section">
+                    <h3>Backup & Data</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="createBackup()">Create Backup</button>
+                        <button class="btn btn-warning" onclick="importBackup()">Import Backup</button>
+                    </div>
+                    <div id="backupsList" class="mt-3">
+                        <h4>Available Backups</h4>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Size</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="backupsTable">
+                                    <!-- Backups will be listed here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Change -->
+                <div class="settings-section">
+                    <h3>Change Password</h3>
+                    <div class="form-group">
+                        <label>New Admin Password:</label>
+                        <input type="password" id="newPassword" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add/Edit Service</h3>
+                <button class="close-btn" onclick="closeModal('serviceModal')">&times;</button>
+            </div>
+            <form id="serviceForm">
+                <div class="form-group">
+                    <label>Service Name:</label>
+                    <input type="text" id="serviceName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="serviceDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Duration (minutes):</label>
+                        <input type="number" id="serviceDuration" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($):</label>
+                        <input type="number" id="servicePrice" class="form-control" step="0.01" required>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Save Service</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('serviceModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit User</h3>
+                <button class="close-btn" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="userName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="tel" id="userPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Telegram ID:</label>
+                    <input type="text" id="userTelegramId" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Bonuses:</label>
+                    <input type="number" id="userBonuses" class="form-control" value="0">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Block User Modal -->
+    <div id="blockUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Block User</h3>
+                <button class="close-btn" onclick="closeModal('blockUserModal')">&times;</button>
+            </div>
+            <form id="blockUserForm">
+                <div class="form-group">
+                    <label>Block Type:</label>
+                    <select id="blockType" class="form-control" required>
+                        <option value="telegram">By Telegram ID</option>
+                        <option value="phone">By Phone Number</option>
+                        <option value="ip">By IP Address</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Block Duration:</label>
+                    <select id="blockDuration" class="form-control" required>
+                        <option value="1">1 Day</option>
+                        <option value="7">1 Week</option>
+                        <option value="30">1 Month</option>
+                        <option value="365">1 Year</option>
+                        <option value="permanent">Permanent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reason:</label>
+                    <textarea id="blockReason" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-danger">Block User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('blockUserModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Moderator Modal -->
+    <div id="moderatorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Moderator</h3>
+                <button class="close-btn" onclick="closeModal('moderatorModal')">&times;</button>
+            </div>
+            <form id="moderatorForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="moderatorName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="tel" id="moderatorPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="moderatorPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Permissions:</label>
+                    <div>
+                        <label><input type="checkbox" id="permBookings" checked> Manage Bookings</label><br>
+                        <label><input type="checkbox" id="permUsers"> Manage Users</label><br>
+                        <label><input type="checkbox" id="permServices"> Manage Services</label>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Add Moderator</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('moderatorModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        const ADMIN_PASSWORD = 'R00T$522166!Adm!n#ARIA*DEV';
+        const BOT_TOKEN = '7841202674:AAEm7NL-xgdCWQac1G393ypShtGrDeCyWZA';
+        const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+        let currentUser = null;
+        let currentEditingId = null;
+
+        // Data Storage
+        class DataManager {
+            constructor() {
+                this.initializeData();
+            }
+
+            initializeData() {
+                if (!localStorage.getItem('barbershop_data')) {
+                    const initialData = {
+                        services: [
+                            { id: 1, name: 'Classic Haircut', description: 'Traditional haircut with styling', duration: 30, price: 25.00 },
+                            { id: 2, name: 'Beard Trim', description: 'Professional beard trimming and shaping', duration: 20, price: 15.00 },
+                            { id: 3, name: 'Hair Wash & Style', description: 'Complete hair wash and styling service', duration: 45, price: 35.00 }
+                        ],
+                        users: [],
+                        bookings: [],
+                        moderators: [],
+                        blockedUsers: [],
+                        settings: {
+                            businessName: 'Elite Barbershop',
+                            businessAddress: '123 Main Street, City',
+                            businessPhone: '+1234567890',
+                            workingHours: 'Mon-Sat: 9AM-8PM',
+                            bonusEnabled: true,
+                            bonusPerService: 10,
+                            bonusValue: 5
+                        }
+                    };
+                    this.saveData(initialData);
+                }
+            }
+
+            getData() {
+                return JSON.parse(localStorage.getItem('barbershop_data'));
+            }
+
+            saveData(data) {
+                localStorage.setItem('barbershop_data', JSON.stringify(data));
+            }
+
+            addService(service) {
+                const data = this.getData();
+                service.id = Date.now();
+                data.services.push(service);
+                this.saveData(data);
+                return service;
+            }
+
+            updateService(id, service) {
+                const data = this.getData();
+                const index = data.services.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    data.services[index] = { ...data.services[index], ...service };
+                    this.saveData(data);
+                    return data.services[index];
+                }
+                return null;
+            }
+
+            deleteService(id) {
+                const data = this.getData();
+                data.services = data.services.filter(s => s.id !== id);
+                this.saveData(data);
+            }
+
+            addUser(user) {
+                const data = this.getData();
+                user.id = Date.now();
+                user.bonuses = user.bonuses || 0;
+                user.status = 'active';
+                user.createdAt = new Date().toISOString();
+                data.users.push(user);
+                this.saveData(data);
+                return user;
+            }
+
+            updateUser(id, user) {
+                const data = this.getData();
+                const index = data.users.findIndex(u => u.id === id);
+                if (index !== -1) {
+                    data.users[index] = { ...data.users[index], ...user };
+                    this.saveData(data);
+                    return data.users[index];
+                }
+                return null;
+            }
+
+            deleteUser(id) {
+                const data = this.getData();
+                data.users = data.users.filter(u => u.id !== id);
+                this.saveData(data);
+            }
+
+            addBooking(booking) {
+                const data = this.getData();
+                booking.id = Date.now();
+                booking.status = 'pending';
+                booking.createdAt = new Date().toISOString();
+                data.bookings.push(booking);
+                this.saveData(data);
+                return booking;
+            }
+
+            updateBooking(id, booking) {
+                const data = this.getData();
+                const index = data.bookings.findIndex(b => b.id === id);
+                if (index !== -1) {
+                    data.bookings[index] = { ...data.bookings[index], ...booking };
+                    this.saveData(data);
+                    return data.bookings[index];
+                }
+                return null;
+            }
+
+            blockUser(userId, blockData) {
+                const data = this.getData();
+                const user = data.users.find(u => u.id === userId);
+                if (user) {
+                    user.status = 'blocked';
+                    data.blockedUsers.push({
+                        id: Date.now(),
+                        userId: userId,
+                        ...blockData,
+                        blockedAt: new Date().toISOString()
+                    });
+                    this.saveData(data);
+                }
+            }
+
+            unblockUser(userId) {
+                const data = this.getData();
+                const user = data.users.find(u => u.id === userId);
+                if (user) {
+                    user.status = 'active';
+                    data.blockedUsers = data.blockedUsers.filter(b => b.userId !== userId);
+                    this.saveData(data);
+                }
+            }
+        }
+
+        const dataManager = new DataManager();
+
+        // Authentication
+        function login() {
+            const userType = document.getElementById('userType').value;
+            const password = document.getElementById('password').value;
+
+            if (userType === 'admin' && password === ADMIN_PASSWORD) {
+                currentUser = { type: 'admin', name: 'Administrator' };
+                showDashboard();
+                showNotification('Welcome, Administrator!', 'success');
+            } else if (userType === 'moderator') {
+                const data = dataManager.getData();
+                const moderator = data.moderators.find(m => m.password === password);
+                if (moderator) {
+                    currentUser = { 
+                        type: 'moderator', 
+                        name: moderator.name, 
+                        permissions: moderator.permissions 
+                    };
+                    showDashboard();
+                    showNotification(`Welcome, ${moderator.name}!`, 'success');
+                    
+                    // Hide pages based on permissions
+                    if (!moderator.permissions.services) {
+                        document.querySelector('[data-page="services"]').style.display = 'none';
+                    }
+                    if (!moderator.permissions.users) {
+                        document.querySelector('[data-page="users"]').style.display = 'none';
+                    }
+                    if (!moderator.permissions.bookings) {
+                        document.querySelector('[data-page="bookings"]').style.display = 'none';
+                    }
+                } else {
+                    showNotification('Invalid moderator credentials!', 'error');
+                }
+            } else {
+                showNotification('Invalid credentials!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('password').value = '';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            loadDashboardData();
+        }
+
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            document.getElementById(pageId + 'Page').classList.add('active');
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+
+            // Load page-specific data
+            switch(pageId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'services':
+                    loadServices();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'bookings':
+                    loadBookings();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // Dashboard Data Loading
+        function loadDashboardData() {
+            const data = dataManager.getData();
+            document.getElementById('totalUsers').textContent = data.users.length;
+            document.getElementById('totalBookings').textContent = data.bookings.length;
+            document.getElementById('totalServices').textContent = data.services.length;
+        }
+
+        function filterStats(period) {
+            // Implementation for filtering stats by period
+            showNotification(`Filtered stats by ${period}`, 'success');
+        }
+
+        // Services Management
+        function loadServices() {
+            const data = dataManager.getData();
+            const tbody = document.getElementById('servicesTable');
+            tbody.innerHTML = '';
+
+            data.services.forEach(service => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${service.name}</td>
+                    <td>${service.description}</td>
+                    <td>${service.duration} min</td>
+                    <td>$${service.price.toFixed(2)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editService(${service.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteService(${service.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function openServiceModal(serviceId = null) {
+            currentEditingId = serviceId;
+            const modal = document.getElementById('serviceModal');
+            const title = document.querySelector('#serviceModal .modal-title');
+            
+            if (serviceId) {
+                const data = dataManager.getData();
+                const service = data.services.find(s => s.id === serviceId);
+                if (service) {
+                    document.getElementById('serviceName').value = service.name;
+                    document.getElementById('serviceDescription').value = service.description;
+                    document.getElementById('serviceDuration').value = service.duration;
+                    document.getElementById('servicePrice').value = service.price;
+                    title.textContent = 'Edit Service';
+                }
+            } else {
+                document.getElementById('serviceForm').reset();
+                title.textContent = 'Add Service';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function editService(id) {
+            openServiceModal(id);
+        }
+
+        function deleteService(id) {
+            if (confirm('Are you sure you want to delete this service?')) {
+                dataManager.deleteService(id);
+                loadServices();
+                loadDashboardData();
+                showNotification('Service deleted successfully!', 'success');
+            }
+        }
+
+        // Users Management
+        function loadUsers() {
+            const data = dataManager.getData();
+            const tbody = document.getElementById('usersTable');
+            tbody.innerHTML = '';
+
+            data.users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.telegramId || 'N/A'}</td>
+                    <td>${user.bonuses || 0}</td>
+                    <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                            <button class="btn btn-sm btn-warning" onclick="blockUser(${user.id})">Block</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editUser(id) {
+            const data = dataManager.getData();
+            const user = data.users.find(u => u.id === id);
+            if (user) {
+                currentEditingId = id;
+                document.getElementById('userName').value = user.name;
+                document.getElementById('userPhone').value = user.phone;
+                document.getElementById('userTelegramId').value = user.telegramId || '';
+                document.getElementById('userBonuses').value = user.bonuses || 0;
+                document.getElementById('userModal').classList.add('active');
+            }
+        }
+
+        function deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                dataManager.deleteUser(id);
+                loadUsers();
+                loadDashboardData();
+                showNotification('User deleted successfully!', 'success');
+            }
+        }
+
+        function blockUser(id) {
+            currentEditingId = id;
+            document.getElementById('blockUserModal').classList.add('active');
+        }
+
+        // Bookings Management
+        function loadBookings() {
+            const data = dataManager.getData();
+            const tbody = document.getElementById('bookingsTable');
+            tbody.innerHTML = '';
+
+            data.bookings.forEach(booking => {
+                const user = data.users.find(u => u.id === booking.userId);
+                const service = data.services.find(s => s.id === booking.serviceId);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user ? user.name : 'Unknown'}</td>
+                    <td>${service ? service.name : 'Unknown'}</td>
+                    <td>${booking.date}</td>
+                    <td>${booking.time}</td>
+                    <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-success" onclick="acceptBooking(${booking.id})">Accept</button>
+                            <button class="btn btn-sm btn-danger" onclick="declineBooking(${booking.id})">Decline</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function acceptBooking(id) {
+            dataManager.updateBooking(id, { status: 'confirmed' });
+            loadBookings();
+            showNotification('Booking accepted!', 'success');
+            
+            // Send confirmation to user via Telegram
+            const data = dataManager.getData();
+            const booking = data.bookings.find(b => b.id === id);
+            if (booking) {
+                const user = data.users.find(u => u.id === booking.userId);
+                if (user && user.telegramId) {
+                    sendTelegramMessage(user.telegramId, '✅ Your booking is confirmed!');
+                }
+            }
+        }
+
+        function declineBooking(id) {
+            dataManager.updateBooking(id, { status: 'declined' });
+            loadBookings();
+            showNotification('Booking declined!', 'warning');
+        }
+
+        // Settings Management
+        function loadSettings() {
+            const data = dataManager.getData();
+            const settings = data.settings;
+            
+            document.getElementById('businessName').value = settings.businessName;
+            document.getElementById('businessAddress').value = settings.businessAddress;
+            document.getElementById('businessPhone').value = settings.businessPhone;
+            document.getElementById('workingHours').value = settings.workingHours;
+            document.getElementById('bonusPerService').value = settings.bonusPerService;
+            document.getElementById('bonusValue').value = settings.bonusValue;
+            
+            loadModerators();
+            loadBackups();
+        }
+
+        function saveContentSettings() {
+            const data = dataManager.getData();
+            data.settings.businessName = document.getElementById('businessName').value;
+            data.settings.businessAddress = document.getElementById('businessAddress').value;
+            data.settings.businessPhone = document.getElementById('businessPhone').value;
+            data.settings.workingHours = document.getElementById('workingHours').value;
+            dataManager.saveData(data);
+            showNotification('Content settings saved!', 'success');
+        }
+
+        function saveBonusSettings() {
+            const data = dataManager.getData();
+            data.settings.bonusPerService = parseInt(document.getElementById('bonusPerService').value);
+            data.settings.bonusValue = parseInt(document.getElementById('bonusValue').value);
+            dataManager.saveData(data);
+            showNotification('Bonus settings saved!', 'success');
+        }
+
+        function toggleBonusSystem(enabled) {
+            const data = dataManager.getData();
+            data.settings.bonusEnabled = enabled;
+            dataManager.saveData(data);
+            showNotification(`Bonus system ${enabled ? 'enabled' : 'disabled'}!`, 'success');
+        }
+
+        function loadModerators() {
+            const data = dataManager.getData();
+            const container = document.getElementById('moderatorsList');
+            container.innerHTML = '';
+            
+            data.moderators.forEach(moderator => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <h4>${moderator.name}</h4>
+                    <p>Phone: ${moderator.phone}</p>
+                    <p>Status: <span class="status-badge status-${moderator.enabled ? 'active' : 'blocked'}">${moderator.enabled ? 'Active' : 'Disabled'}</span></p>
+                    <div class="action-buttons">
+                        <button class="btn btn-sm btn-${moderator.enabled ? 'warning' : 'success'}" onclick="toggleModerator(${moderator.id})">
+                            ${moderator.enabled ? 'Disable' : 'Enable'}
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteModerator(${moderator.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function openModeratorModal() {
+            document.getElementById('moderatorForm').reset();
+            document.getElementById('moderatorModal').classList.add('active');
+        }
+
+        function toggleModerator(id) {
+            const data = dataManager.getData();
+            const moderator = data.moderators.find(m => m.id === id);
+            if (moderator) {
+                moderator.enabled = !moderator.enabled;
+                dataManager.saveData(data);
+                loadModerators();
+                showNotification(`Moderator ${moderator.enabled ? 'enabled' : 'disabled'}!`, 'success');
+            }
+        }
+
+        function deleteModerator(id) {
+            if (confirm('Are you sure you want to delete this moderator?')) {
+                const data = dataManager.getData();
+                data.moderators = data.moderators.filter(m => m.id !== id);
+                dataManager.saveData(data);
+                loadModerators();
+                showNotification('Moderator deleted!', 'success');
+            }
+        }
+
+        function createBackup() {
+            const data = dataManager.getData();
+            const backupDate = new Date();
+            const backup = {
+                ...data,
+                backupDate: backupDate.toISOString()
+            };
+            
+            // Get existing backups or initialize
+            let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+            
+            // Create backup entry
+            const backupEntry = {
+                id: Date.now(),
+                name: `Backup_${backupDate.toISOString().split('T')[0]}`,
+                date: backupDate.toLocaleDateString(),
+                time: backupDate.toLocaleTimeString(),
+                size: JSON.stringify(backup).length,
+                data: backup
+            };
+            
+            // Add to backups list
+            backups.push(backupEntry);
+            localStorage.setItem('barbershop_backups', JSON.stringify(backups));
+            
+            // Update UI
+            loadBackups();
+            showNotification('Backup created successfully!', 'success');
+        }
+
+        function downloadBackup(backupId) {
+            const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+            const backup = backups.find(b => b.id === backupId);
+            
+            if (backup) {
+                const blob = new Blob([JSON.stringify(backup.data)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${backup.name}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showNotification('Backup downloaded!', 'success');
+            } else {
+                showNotification('Backup not found!', 'error');
+            }
+        }
+
+        function deleteBackup(backupId) {
+            if (confirm('Are you sure you want to delete this backup?')) {
+                let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                backups = backups.filter(b => b.id !== backupId);
+                localStorage.setItem('barbershop_backups', JSON.stringify(backups));
+                loadBackups();
+                showNotification('Backup deleted!', 'success');
+            }
+        }
+
+        function importBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const backup = JSON.parse(e.target.result);
+                            dataManager.saveData(backup);
+                            showNotification('Backup imported successfully!', 'success');
+                            loadDashboardData();
+                        } catch (error) {
+                            showNotification('Invalid backup file!', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function loadBackups() {
+            const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+            const tbody = document.getElementById('backupsTable');
+            tbody.innerHTML = '';
+            
+            backups.forEach(backup => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${backup.name}</td>
+                    <td>${backup.date}</td>
+                    <td>${backup.time}</td>
+                    <td>${formatFileSize(backup.size)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBackup(${backup.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        // Telegram Bot Functions
+async function sendTelegramMessage(chatId, message, keyboard = null) {
+    try {
+        const payload = {
+            chat_id: chatId,
+            text: message,
+            parse_mode: 'HTML'
+        };
+        
+        if (keyboard) {
+            payload.reply_markup = JSON.stringify({
+                inline_keyboard: keyboard
+            });
+        }
+        
+        const response = await fetch(`${BOT_API_URL}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error sending Telegram message:', error);
+        return null;
+    }
+}
+
+async function testTelegramBot() {
+    try {
+        const response = await fetch(`${BOT_API_URL}/getMe`);
+        const data = await response.json();
+        
+        if (data.ok) {
+            showNotification(`Bot is working! Bot name: ${data.result.first_name}`, 'success');
+        } else {
+            showNotification('Bot test failed!', 'error');
+        }
+    } catch (error) {
+        showNotification('Error testing bot!', 'error');
+    }
+}
+
+async function setupWebhook() {
+    // In a real application, you would set up a webhook URL
+    showNotification('Webhook setup would be configured here', 'success');
+}
+
+async function deleteBot() {
+    if (confirm('Are you sure you want to delete this bot?')) {
+        // In a real application, you would revoke the bot token
+        showNotification('Bot deleted successfully!', 'success');
+    }
+}
+
+// Handle Telegram Bot Commands
+function handleTelegramUpdate(update) {
+    if (update.message) {
+        const message = update.message;
+        const chatId = message.chat.id;
+        const text = message.text;
+        const userId = message.from.id;
+        
+        // Check if user exists, if not create one
+        let user = findOrCreateUser(userId, message.from);
+        
+        if (text === '/start') {
+            handleStartCommand(chatId);
+        } else if (text === '/services') {
+            handleServicesCommand(chatId);
+        } else if (text === '/book') {
+            handleBookCommand(chatId, userId);
+        } else if (text === '/help') {
+            handleHelpCommand(chatId);
+        }
+    } else if (update.callback_query) {
+        handleCallbackQuery(update.callback_query);
+    }
+}
+
+function handleStartCommand(chatId) {
+    const data = dataManager.getData();
+    const settings = data.settings;
+    
+    const welcomeMessage = `Welcome to ${settings.businessName}! 💈\n\nHow can we help you today?`;
+    
+    const keyboard = [
+        [{ text: 'Services', callback_data: 'services' }],
+        [{ text: 'Help', callback_data: 'help' }]
+    ];
+    
+    sendTelegramMessage(chatId, welcomeMessage, keyboard);
+}
+
+function handleServicesCommand(chatId) {
+    showServices(chatId);
+}
+
+function handleBookCommand(chatId, userId) {
+    startBookingProcess(chatId, userId);
+}
+
+function handleHelpCommand(chatId) {
+    showHelp(chatId);
+}
+
+function handleCallbackQuery(callbackQuery) {
+    const chatId = callbackQuery.message.chat.id;
+    const userId = callbackQuery.from.id;
+    const data = callbackQuery.data;
+    
+    // Store user's booking data in session
+    if (!window.bookingSessions) {
+        window.bookingSessions = {};
+    }
+    
+    if (!window.bookingSessions[userId]) {
+        window.bookingSessions[userId] = {};
+    }
+    
+    const session = window.bookingSessions[userId];
+    
+    switch (data) {
+        case 'start':
+            handleStartCommand(chatId);
+            break;
+        case 'services':
+            showServices(chatId);
+            break;
+        case 'book':
+            startBookingProcess(chatId, userId);
+            break;
+        case 'help':
+            showHelp(chatId);
+            break;
+        case 'next':
+            if (session.name && session.phone) {
+                showAvailableTimes(chatId, userId);
+            }
+            break;
+        case 'back':
+            handleStartCommand(chatId);
+            break;
+        case 'confirm':
+            confirmBooking(chatId, userId);
+            break;
+        case 'home':
+            showServices(chatId);
+            break;
+        default:
+            // Check if it's a date selection
+            if (data.startsWith('date_')) {
+                const selectedDate = data.replace('date_', '');
+                session.date = selectedDate;
+                showTimeSlots(chatId, userId, selectedDate);
+            }
+            // Check if it's a time selection
+            else if (data.startsWith('time_')) {
+                const selectedTime = data.replace('time_', '');
+                session.time = selectedTime;
+                showBookingSummary(chatId, userId);
+            }
+            break;
+    }
+}
+
+function findOrCreateUser(telegramId, telegramUser) {
+    const data = dataManager.getData();
+    let user = data.users.find(u => u.telegramId === telegramId.toString());
+    
+    if (!user) {
+        user = {
+            name: telegramUser.first_name + (telegramUser.last_name ? ' ' + telegramUser.last_name : ''),
+            phone: '',
+            telegramId: telegramId.toString(),
+            bonuses: 0,
+            status: 'active'
+        };
+        dataManager.addUser(user);
+    }
+    
+    return user;
+}
+
+function showServices(chatId) {
+    const data = dataManager.getData();
+    let message = '✂️ <b>Our Services:</b>\n\n';
+    
+    data.services.forEach((service, index) => {
+        message += `<b>${index + 1}. ${service.name}</b>\n`;
+        message += `   ${service.description}\n`;
+        message += `   Duration: ${service.duration} min\n`;
+        message += `   Price: $${service.price.toFixed(2)}\n\n`;
+    });
+    
+    const keyboard = [
+        [{ text: 'Book Now', callback_data: 'book' }],
+        [{ text: 'Back', callback_data: 'start' }]
+    ];
+    
+    sendTelegramMessage(chatId, message, keyboard);
+}
+
+function startBookingProcess(chatId, userId) {
+    // Initialize booking session
+    if (!window.bookingSessions) {
+        window.bookingSessions = {};
+    }
+    
+    window.bookingSessions[userId] = {};
+    
+    const message = 'Please provide your name:';
+    sendTelegramMessage(chatId, message);
+    
+    // Set up a listener for the next message
+    window.nextMessageHandler = function(update) {
+        if (update.message && update.message.from.id === userId) {
+            const name = update.message.text;
+            window.bookingSessions[userId].name = name;
+            
+            // Ask for phone number
+            sendTelegramMessage(chatId, 'Please provide your phone number:');
+            
+            // Set up listener for phone number
+            window.nextMessageHandler = function(update) {
+                if (update.message && update.message.from.id === userId) {
+                    const phone = update.message.text;
+                    window.bookingSessions[userId].phone = phone;
+                    
+                    // Show services for selection
+                    const data = dataManager.getData();
+                    let message = 'Please select a service:\n\n';
+                    
+                    data.services.forEach((service, index) => {
+                        message += `${index + 1}. ${service.name} - $${service.price.toFixed(2)}\n`;
+                    });
+                    
+                    const keyboard = data.services.map((service, index) => {
+                        return [{ text: service.name, callback_data: `service_${service.id}` }];
+                    });
+                    
+                    keyboard.push([
+                        { text: 'Next', callback_data: 'next' },
+                        { text: 'Back', callback_data: 'back' }
+                    ]);
+                    
+                    sendTelegramMessage(chatId, message, keyboard);
+                    
+                    // Clear the handler
+                    window.nextMessageHandler = null;
+                }
+            };
+        }
+    };
+}
+
+function showAvailableTimes(chatId, userId) {
+    // Generate available dates (next 7 days)
+    const dates = [];
+    const today = new Date();
+    
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() + i);
+        const dateStr = date.toISOString().split('T')[0];
+        const formattedDate = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).format(date);
+        dates.push({ date: dateStr, formatted: formattedDate });
+    }
+    
+    const message = 'Please select a date:';
+    const keyboard = dates.map(date => {
+        return [{ text: date.formatted, callback_data: `date_${date.date}` }];
+    });
+    
+    keyboard.push([{ text: 'Back', callback_data: 'back' }]);
+    
+    sendTelegramMessage(chatId, message, keyboard);
+}
+
+function showTimeSlots(chatId, userId, selectedDate) {
+    // Generate time slots (9 AM to 5 PM, hourly)
+    const timeSlots = [];
+    for (let hour = 9; hour <= 17; hour++) {
+        const timeStr = `${hour}:00`;
+        const formattedTime = `${hour > 12 ? hour - 12 : hour}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
+        timeSlots.push({ time: timeStr, formatted: formattedTime });
+    }
+    
+    const message = `Please select a time for ${selectedDate}:`;
+    const keyboard = timeSlots.map(slot => {
+        return [{ text: slot.formatted, callback_data: `time_${slot.time}` }];
+    });
+    
+    keyboard.push([{ text: 'Back', callback_data: 'back' }]);
+    
+    sendTelegramMessage(chatId, message, keyboard);
+}
+
+function showBookingSummary(chatId, userId) {
+    const session = window.bookingSessions[userId];
+    
+    const message = `📋 <b>Booking Summary:</b>\n\n` +
+                  `Name: ${session.name}\n` +
+                  `Phone: ${session.phone}\n` +
+                  `Date: ${session.date}\n` +
+                  `Time: ${session.time}\n\n` +
+                  `Please confirm your booking:`;
+    
+    const keyboard = [
+        [{ text: 'Confirm', callback_data: 'confirm' }],
+        [{ text: 'Back', callback_data: 'back' }]
+    ];
+    
+    sendTelegramMessage(chatId, message, keyboard);
+}
+
+function confirmBooking(chatId, userId) {
+    const session = window.bookingSessions[userId];
+    
+    // Create booking in the system
+    const data = dataManager.getData();
+    const user = data.users.find(u => u.telegramId === userId.toString());
+    
+    if (user) {
+        const booking = {
+            userId: user.id,
+            serviceId: 1, // Default to first service if not selected
+            date: session.date,
+            time: session.time,
+            notes: session.notes || '',
+            status: 'pending'
+        };
+        
+        dataManager.addBooking(booking);
+        
+        // Send confirmation message
+        const confirmMessage = `📤 <b>Your reservation has been sent.</b>\n\n` +
+                             `Name: ${session.name}\n` +
+                             `Phone: ${session.phone}\n` +
+                             `Date: ${session.date}\n` +
+                             `Time: ${session.time}`;
+        
+        sendTelegramMessage(chatId, confirmMessage);
+        
+        // Send success message after admin confirms
+        setTimeout(() => {
+            const successMessage = `✅ <b>Your booking is confirmed</b>`;
+            const keyboard = [
+                [{ text: 'Home', callback_data: 'home' }]
+            ];
+            
+            sendTelegramMessage(chatId, successMessage, keyboard);
+        }, 2000);
+        
+        // Clear session
+        delete window.bookingSessions[userId];
+    }
+}
+
+function showHelp(chatId) {
+    const data = dataManager.getData();
+    const settings = data.settings;
+    
+    const message = `ℹ️ <b>Contact Information:</b>\n\n` +
+                  `📍 <b>Address:</b> ${settings.businessAddress}\n` +
+                  `📞 <b>Phone:</b> ${settings.businessPhone}\n` +
+                  `🕒 <b>Working Hours:</b> ${settings.workingHours}`;
+    
+    sendTelegramMessage(chatId, message);
+}
+
+        // Form Handlers
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+
+        document.getElementById('serviceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const service = {
+                name: document.getElementById('serviceName').value,
+                description: document.getElementById('serviceDescription').value,
+                duration: parseInt(document.getElementById('serviceDuration').value),
+                price: parseFloat(document.getElementById('servicePrice').value)
+            };
+            
+            if (currentEditingId) {
+                dataManager.updateService(currentEditingId, service);
+                showNotification('Service updated successfully!', 'success');
+            } else {
+                dataManager.addService(service);
+                showNotification('Service added successfully!', 'success');
+            }
+            
+            closeModal('serviceModal');
+            loadServices();
+            loadDashboardData();
+        });
+
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = {
+                name: document.getElementById('userName').value,
+                phone: document.getElementById('userPhone').value,
+                telegramId: document.getElementById('userTelegramId').value,
+                bonuses: parseInt(document.getElementById('userBonuses').value)
+            };
+            
+            if (currentEditingId) {
+                dataManager.updateUser(currentEditingId, user);
+                showNotification('User updated successfully!', 'success');
+            } else {
+                dataManager.addUser(user);
+                showNotification('User added successfully!', 'success');
+            }
+            
+            closeModal('userModal');
+            loadUsers();
+            loadDashboardData();
+        });
+
+        document.getElementById('blockUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const blockData = {
+                type: document.getElementById('blockType').value,
+                duration: document.getElementById('blockDuration').value,
+                reason: document.getElementById('blockReason').value
+            };
+            
+            dataManager.blockUser(currentEditingId, blockData);
+            closeModal('blockUserModal');
+            loadUsers();
+            showNotification('User blocked successfully!', 'success');
+        });
+
+        document.getElementById('moderatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const moderator = {
+                id: Date.now(),
+                name: document.getElementById('moderatorName').value,
+                phone: document.getElementById('moderatorPhone').value,
+                password: document.getElementById('moderatorPassword').value,
+                permissions: {
+                    bookings: document.getElementById('permBookings').checked,
+                    users: document.getElementById('permUsers').checked,
+                    services: document.getElementById('permServices').checked
+                },
+                enabled: true,
+                createdAt: new Date().toISOString()
+            };
+            
+            const data = dataManager.getData();
+            data.moderators.push(moderator);
+            dataManager.saveData(data);
+            
+            closeModal('moderatorModal');
+            loadModerators();
+            showNotification('Moderator added successfully!', 'success');
+        });
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                });
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            // Modal close buttons
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.classList.remove('active');
+                });
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Utility Functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            currentEditingId = null;
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show login page by default
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+        });
+    </script>
+</body>
+</html>
