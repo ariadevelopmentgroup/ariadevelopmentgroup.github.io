@@ -88,6 +88,12 @@
             border-color: var(--primary-color);
         }
 
+        .form-control:disabled {
+            background-color: var(--background-color);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -103,12 +109,17 @@
             gap: 0.5rem;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background-color: var(--primary-dark);
         }
 
@@ -117,9 +128,17 @@
             color: white;
         }
 
+        .btn-success:hover:not(:disabled) {
+            background-color: #059669;
+        }
+
         .btn-danger {
             background-color: var(--danger-color);
             color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #dc2626;
         }
 
         .btn-warning {
@@ -127,9 +146,17 @@
             color: white;
         }
 
+        .btn-warning:hover:not(:disabled) {
+            background-color: #d97706;
+        }
+
         .btn-secondary {
             background-color: var(--secondary-color);
             color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #475569;
         }
 
         .btn-sm {
@@ -336,7 +363,7 @@
             border-radius: 0.75rem;
             padding: 2rem;
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -444,6 +471,8 @@
             z-index: 1001;
             transform: translateX(100%);
             transition: transform 0.3s ease;
+            max-width: 400px;
+            word-wrap: break-word;
         }
 
         .notification.show {
@@ -494,6 +523,11 @@
             .permission-toggle {
                 justify-content: center;
             }
+
+            .modal-content {
+                max-width: 95%;
+                padding: 1.5rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -501,13 +535,20 @@
                 padding: 1.5rem;
             }
 
-            .modal-content {
-                padding: 1.5rem;
-            }
-
             .btn {
                 padding: 0.625rem 1.25rem;
                 font-size: 0.875rem;
+            }
+
+            .notification {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                transform: translateY(100%);
+            }
+
+            .notification.show {
+                transform: translateY(0);
             }
         }
 
@@ -579,7 +620,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 0.5rem;
-            padding: 0.5rem;
+            padding: 0.75rem;
             border: 1px solid var(--border-color);
             border-radius: 0.25rem;
             background: white;
@@ -591,12 +632,20 @@
 
         .permission-name {
             font-weight: 500;
+            flex: 1;
         }
 
         .permission-controls {
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .permission-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            min-width: 60px;
         }
 
         .permission-status {
@@ -604,6 +653,8 @@
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             font-weight: 600;
+            min-width: 70px;
+            text-align: center;
         }
 
         .permission-enabled {
@@ -614,6 +665,27 @@
         .permission-disabled {
             background-color: #fee2e2;
             color: #991b1b;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .success-message {
+            color: var(--success-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
         }
     </style>
 </head>
@@ -957,11 +1029,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Duration (minutes):</label>
-                        <input type="number" id="serviceDuration" class="form-control" required>
+                        <input type="number" id="serviceDuration" class="form-control" required min="1">
                     </div>
                     <div class="form-group">
                         <label>Price ($):</label>
-                        <input type="number" id="servicePrice" class="form-control" step="0.01" required>
+                        <input type="number" id="servicePrice" class="form-control" step="0.01" required min="0">
                     </div>
                 </div>
                 <div class="action-buttons">
@@ -994,7 +1066,7 @@
                 </div>
                 <div class="form-group">
                     <label>Bonuses:</label>
-                    <input type="number" id="userBonuses" class="form-control" value="0">
+                    <input type="number" id="userBonuses" class="form-control" value="0" min="0">
                 </div>
                 <div class="action-buttons">
                     <button type="submit" class="btn btn-primary">Save User</button>
@@ -1060,7 +1132,7 @@
                 </div>
                 <div class="form-group">
                     <label>Password:</label>
-                    <input type="password" id="moderatorPassword" class="form-control" required>
+                    <input type="password" id="moderatorPassword" class="form-control" required minlength="6">
                 </div>
                 <div class="form-group">
                     <label>Permissions:</label>
@@ -1069,7 +1141,7 @@
                         <div class="permission-item">
                             <div class="permission-name">📅 Bookings Page</div>
                             <div class="permission-controls">
-                                <span>View:</span>
+                                <span class="permission-label">View:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'view', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'view', false)">Disable</button>
                                 <span class="permission-status permission-enabled" id="bookingsViewStatus">Enabled</span>
@@ -1078,7 +1150,7 @@
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span>Edit:</span>
+                                <span class="permission-label">Edit:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'edit', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'edit', false)">Disable</button>
                                 <span class="permission-status permission-enabled" id="bookingsEditStatus">Enabled</span>
@@ -1089,7 +1161,7 @@
                         <div class="permission-item">
                             <div class="permission-name">👥 Users Page</div>
                             <div class="permission-controls">
-                                <span>View:</span>
+                                <span class="permission-label">View:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'view', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'view', false)">Disable</button>
                                 <span class="permission-status permission-disabled" id="usersViewStatus">Disabled</span>
@@ -1098,7 +1170,7 @@
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span>Edit:</span>
+                                <span class="permission-label">Edit:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'edit', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'edit', false)">Disable</button>
                                 <span class="permission-status permission-disabled" id="usersEditStatus">Disabled</span>
@@ -1109,7 +1181,7 @@
                         <div class="permission-item">
                             <div class="permission-name">✂️ Services Page</div>
                             <div class="permission-controls">
-                                <span>View:</span>
+                                <span class="permission-label">View:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'view', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'view', false)">Disable</button>
                                 <span class="permission-status permission-disabled" id="servicesViewStatus">Disabled</span>
@@ -1118,7 +1190,7 @@
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span>Edit:</span>
+                                <span class="permission-label">Edit:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'edit', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'edit', false)">Disable</button>
                                 <span class="permission-status permission-disabled" id="servicesEditStatus">Disabled</span>
@@ -1129,7 +1201,7 @@
                         <div class="permission-item">
                             <div class="permission-name">⚙️ Settings Page</div>
                             <div class="permission-controls">
-                                <span>View:</span>
+                                <span class="permission-label">View Only:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'view', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'view', false)">Disable</button>
                                 <span class="permission-status permission-disabled" id="settingsViewStatus">Disabled</span>
@@ -1138,7 +1210,7 @@
                         <div class="permission-item">
                             <div class="permission-name"></div>
                             <div class="permission-controls">
-                                <span>Edit:</span>
+                                <span class="permission-label">Edit Only:</span>
                                 <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'edit', true)">Enable</button>
                                 <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'edit', false)">Disable</button>
                                 <span class="permission-status permission-disabled" id="settingsEditStatus">Disabled</span>
@@ -1215,11 +1287,22 @@
             }
 
             getData() {
-                return JSON.parse(localStorage.getItem('barbershop_data'));
+                try {
+                    return JSON.parse(localStorage.getItem('barbershop_data'));
+                } catch (error) {
+                    console.error('Error parsing data:', error);
+                    this.initializeData();
+                    return JSON.parse(localStorage.getItem('barbershop_data'));
+                }
             }
 
             saveData(data) {
-                localStorage.setItem('barbershop_data', JSON.stringify(data));
+                try {
+                    localStorage.setItem('barbershop_data', JSON.stringify(data));
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    showNotification('Error saving data!', 'error');
+                }
             }
 
             addService(service) {
@@ -1372,36 +1455,41 @@
         // Delete Confirmation Modal Functions
         function showDeleteConfirmation(type, id, itemName) {
             deleteCallback = () => {
-                switch(type) {
-                    case 'service':
-                        dataManager.deleteService(id);
-                        loadServices();
-                        loadDashboardData();
-                        showNotification('Service deleted successfully!', 'success');
-                        break;
-                    case 'user':
-                        dataManager.deleteUser(id);
-                        loadUsers();
-                        loadDashboardData();
-                        showNotification('User deleted successfully!', 'success');
-                        break;
-                    case 'moderator':
-                        const data = dataManager.getData();
-                        data.moderators = data.moderators.filter(m => m.id !== id);
-                        dataManager.saveData(data);
-                        loadModerators();
-                        showNotification('Moderator deleted!', 'success');
-                        break;
-                    case 'backup':
-                        let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
-                        backups = backups.filter(b => b.id !== id);
-                        localStorage.setItem('barbershop_backups', JSON.stringify(backups));
-                        loadBackups();
-                        showNotification('Backup deleted!', 'success');
-                        break;
-                    case 'bot':
-                        deleteBot();
-                        break;
+                try {
+                    switch(type) {
+                        case 'service':
+                            dataManager.deleteService(id);
+                            loadServices();
+                            loadDashboardData();
+                            showNotification('Service deleted successfully!', 'success');
+                            break;
+                        case 'user':
+                            dataManager.deleteUser(id);
+                            loadUsers();
+                            loadDashboardData();
+                            showNotification('User deleted successfully!', 'success');
+                            break;
+                        case 'moderator':
+                            const data = dataManager.getData();
+                            data.moderators = data.moderators.filter(m => m.id !== id);
+                            dataManager.saveData(data);
+                            loadModerators();
+                            showNotification('Moderator deleted!', 'success');
+                            break;
+                        case 'backup':
+                            let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                            backups = backups.filter(b => b.id !== id);
+                            localStorage.setItem('barbershop_backups', JSON.stringify(backups));
+                            loadBackups();
+                            showNotification('Backup deleted!', 'success');
+                            break;
+                        case 'bot':
+                            deleteBot();
+                            break;
+                    }
+                } catch (error) {
+                    console.error('Error during deletion:', error);
+                    showNotification('Error occurred during deletion!', 'error');
                 }
             };
             
@@ -1424,6 +1512,11 @@
         function login() {
             const userType = document.getElementById('userType').value;
             const password = document.getElementById('password').value;
+
+            if (!password.trim()) {
+                showNotification('Please enter a password!', 'error');
+                return;
+            }
 
             if (userType === 'admin' && password === ADMIN_PASSWORD) {
                 currentUser = { type: 'admin', name: 'Administrator' };
@@ -1533,10 +1626,15 @@
 
         // Dashboard Data Loading
         function loadDashboardData() {
-            const data = dataManager.getData();
-            document.getElementById('totalUsers').textContent = data.users.length;
-            document.getElementById('totalBookings').textContent = data.bookings.length;
-            document.getElementById('totalServices').textContent = data.services.length;
+            try {
+                const data = dataManager.getData();
+                document.getElementById('totalUsers').textContent = data.users.length;
+                document.getElementById('totalBookings').textContent = data.bookings.length;
+                document.getElementById('totalServices').textContent = data.services.length;
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showNotification('Error loading dashboard data!', 'error');
+            }
         }
 
         function filterStats(period) {
@@ -1545,37 +1643,42 @@
 
         // Services Management
         function loadServices() {
-            const data = dataManager.getData();
-            const tbody = document.getElementById('servicesTable');
-            tbody.innerHTML = '';
+            try {
+                const data = dataManager.getData();
+                const tbody = document.getElementById('servicesTable');
+                tbody.innerHTML = '';
 
-            // Check edit permissions for moderators
-            const canEdit = checkPermission('services', 'edit');
-            
-            // Hide/show add button based on permissions
-            const addBtn = document.getElementById('addServiceBtn');
-            if (addBtn) {
-                addBtn.style.display = canEdit ? 'block' : 'none';
+                // Check edit permissions for moderators
+                const canEdit = checkPermission('services', 'edit');
+                
+                // Hide/show add button based on permissions
+                const addBtn = document.getElementById('addServiceBtn');
+                if (addBtn) {
+                    addBtn.style.display = canEdit ? 'block' : 'none';
+                }
+
+                data.services.forEach(service => {
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editService(${service.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('service', ${service.id}, '${service.name}')">Delete</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
+
+                    row.innerHTML = `
+                        <td>${service.name}</td>
+                        <td>${service.description}</td>
+                        <td>${service.duration} min</td>
+                        <td>$${service.price.toFixed(2)}</td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+                showNotification('Error loading services!', 'error');
             }
-
-            data.services.forEach(service => {
-                const row = document.createElement('tr');
-                const actionsHtml = canEdit ? `
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-primary" onclick="editService(${service.id})">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('service', ${service.id}, '${service.name}')">Delete</button>
-                    </div>
-                ` : '<span class="text-secondary">View Only</span>';
-
-                row.innerHTML = `
-                    <td>${service.name}</td>
-                    <td>${service.description}</td>
-                    <td>${service.duration} min</td>
-                    <td>$${service.price.toFixed(2)}</td>
-                    <td>${actionsHtml}</td>
-                `;
-                tbody.appendChild(row);
-            });
         }
 
         function openServiceModal(serviceId = null) {
@@ -1611,33 +1714,45 @@
         }
 
         // Users Management
+        function loadUsers()
+
+        function editService(id) {
+            openServiceModal(id);
+        }
+
+        // Users Management
         function loadUsers() {
-            const data = dataManager.getData();
-            const tbody = document.getElementById('usersTable');
-            tbody.innerHTML = '';
+            try {
+                const data = dataManager.getData();
+                const tbody = document.getElementById('usersTable');
+                tbody.innerHTML = '';
 
-            const canEdit = checkPermission('users', 'edit');
+                const canEdit = checkPermission('users', 'edit');
 
-            data.users.forEach(user => {
-                const row = document.createElement('tr');
-                const actionsHtml = canEdit ? `
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('user', ${user.id}, '${user.name}')">Delete</button>
-                        <button class="btn btn-sm btn-warning" onclick="blockUser(${user.id})">Block</button>
-                    </div>
-                ` : '<span class="text-secondary">View Only</span>';
+                data.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('user', ${user.id}, '${user.name}')">Delete</button>
+                            <button class="btn btn-sm btn-warning" onclick="blockUser(${user.id})">Block</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
 
-                row.innerHTML = `
-                    <td>${user.name}</td>
-                    <td>${user.phone}</td>
-                    <td>${user.telegramId || 'N/A'}</td>
-                    <td>${user.bonuses || 0}</td>
-                    <td><span class="status-badge status-${user.status}">${user.status}</span></td>
-                    <td>${actionsHtml}</td>
-                `;
-                tbody.appendChild(row);
-            });
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.phone}</td>
+                        <td>${user.telegramId || 'N/A'}</td>
+                        <td>${user.bonuses || 0}</td>
+                        <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showNotification('Error loading users!', 'error');
+            }
         }
 
         function editUser(id) {
@@ -1670,34 +1785,39 @@
 
         // Bookings Management
         function loadBookings() {
-            const data = dataManager.getData();
-            const tbody = document.getElementById('bookingsTable');
-            tbody.innerHTML = '';
+            try {
+                const data = dataManager.getData();
+                const tbody = document.getElementById('bookingsTable');
+                tbody.innerHTML = '';
 
-            const canEdit = checkPermission('bookings', 'edit');
+                const canEdit = checkPermission('bookings', 'edit');
 
-            data.bookings.forEach(booking => {
-                const user = data.users.find(u => u.id === booking.userId);
-                const service = data.services.find(s => s.id === booking.serviceId);
-                
-                const row = document.createElement('tr');
-                const actionsHtml = canEdit ? `
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-success" onclick="acceptBooking(${booking.id})">Accept</button>
-                        <button class="btn btn-sm btn-danger" onclick="declineBooking(${booking.id})">Decline</button>
-                    </div>
-                ` : '<span class="text-secondary">View Only</span>';
+                data.bookings.forEach(booking => {
+                    const user = data.users.find(u => u.id === booking.userId);
+                    const service = data.services.find(s => s.id === booking.serviceId);
+                    
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-success" onclick="acceptBooking(${booking.id})">Accept</button>
+                            <button class="btn btn-sm btn-danger" onclick="declineBooking(${booking.id})">Decline</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
 
-                row.innerHTML = `
-                    <td>${user ? user.name : 'Unknown'}</td>
-                    <td>${service ? service.name : 'Unknown'}</td>
-                    <td>${booking.date}</td>
-                    <td>${booking.time}</td>
-                    <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
-                    <td>${actionsHtml}</td>
-                `;
-                tbody.appendChild(row);
-            });
+                    row.innerHTML = `
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${service ? service.name : 'Unknown'}</td>
+                        <td>${booking.date || 'N/A'}</td>
+                        <td>${booking.time || 'N/A'}</td>
+                        <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                showNotification('Error loading bookings!', 'error');
+            }
         }
 
         function acceptBooking(id) {
@@ -1734,36 +1854,43 @@
 
         // Settings Management
         function loadSettings() {
-            const data = dataManager.getData();
-            const settings = data.settings;
-            
-            document.getElementById('businessName').value = settings.businessName;
-            document.getElementById('businessAddress').value = settings.businessAddress;
-            document.getElementById('businessPhone').value = settings.businessPhone;
-            document.getElementById('workingHours').value = settings.workingHours;
-            document.getElementById('bonusPerService').value = settings.bonusPerService;
-            document.getElementById('bonusValue').value = settings.bonusValue;
-            
-            // Apply permissions to settings page
-            const canEdit = checkPermission('settings', 'edit');
-            
-            // Disable/enable form controls based on permissions
-            const formControls = document.querySelectorAll('#settingsPage input, #settingsPage textarea, #settingsPage select, #settingsPage button');
-            formControls.forEach(control => {
-                if (!canEdit && !control.classList.contains('btn-secondary')) {
-                    control.disabled = true;
-                }
-            });
+            try {
+                const data = dataManager.getData();
+                const settings = data.settings;
+                
+                document.getElementById('businessName').value = settings.businessName;
+                document.getElementById('businessAddress').value = settings.businessAddress;
+                document.getElementById('businessPhone').value = settings.businessPhone;
+                document.getElementById('workingHours').value = settings.workingHours;
+                document.getElementById('bonusPerService').value = settings.bonusPerService;
+                document.getElementById('bonusValue').value = settings.bonusValue;
+                
+                // Apply permissions to settings page
+                const canEdit = checkPermission('settings', 'edit');
+                
+                // Disable/enable form controls based on permissions
+                const formControls = document.querySelectorAll('#settingsPage input, #settingsPage textarea, #settingsPage select, #settingsPage button');
+                formControls.forEach(control => {
+                    if (!canEdit && !control.classList.contains('btn-secondary')) {
+                        control.disabled = true;
+                    }
+                });
 
-            // Hide/show save buttons
-            const saveBtn = document.getElementById('saveContentBtn');
-            if (saveBtn) {
-                saveBtn.style.display = canEdit ? 'inline-flex' : 'none';
+                // Hide/show save buttons
+                const saveButtons = document.querySelectorAll('#settingsPage .btn-primary, #settingsPage .btn-success, #settingsPage .btn-danger, #settingsPage .btn-warning');
+                saveButtons.forEach(btn => {
+                    if (!btn.textContent.includes('Download')) {
+                        btn.style.display = canEdit ? 'inline-flex' : 'none';
+                    }
+                });
+                
+                loadModerators();
+                loadBackups();
+                loadBotConfiguration();
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showNotification('Error loading settings!', 'error');
             }
-            
-            loadModerators();
-            loadBackups();
-            loadBotConfiguration();
         }
 
         function saveContentSettings() {
@@ -1772,13 +1899,18 @@
                 return;
             }
 
-            const data = dataManager.getData();
-            data.settings.businessName = document.getElementById('businessName').value;
-            data.settings.businessAddress = document.getElementById('businessAddress').value;
-            data.settings.businessPhone = document.getElementById('businessPhone').value;
-            data.settings.workingHours = document.getElementById('workingHours').value;
-            dataManager.saveData(data);
-            showNotification('Content settings saved!', 'success');
+            try {
+                const data = dataManager.getData();
+                data.settings.businessName = document.getElementById('businessName').value;
+                data.settings.businessAddress = document.getElementById('businessAddress').value;
+                data.settings.businessPhone = document.getElementById('businessPhone').value;
+                data.settings.workingHours = document.getElementById('workingHours').value;
+                dataManager.saveData(data);
+                showNotification('Content settings saved!', 'success');
+            } catch (error) {
+                console.error('Error saving content settings:', error);
+                showNotification('Error saving content settings!', 'error');
+            }
         }
 
         function saveBonusSettings() {
@@ -1787,11 +1919,16 @@
                 return;
             }
 
-            const data = dataManager.getData();
-            data.settings.bonusPerService = parseInt(document.getElementById('bonusPerService').value);
-            data.settings.bonusValue = parseInt(document.getElementById('bonusValue').value);
-            dataManager.saveData(data);
-            showNotification('Bonus settings saved!', 'success');
+            try {
+                const data = dataManager.getData();
+                data.settings.bonusPerService = parseInt(document.getElementById('bonusPerService').value) || 0;
+                data.settings.bonusValue = parseInt(document.getElementById('bonusValue').value) || 0;
+                dataManager.saveData(data);
+                showNotification('Bonus settings saved!', 'success');
+            } catch (error) {
+                console.error('Error saving bonus settings:', error);
+                showNotification('Error saving bonus settings!', 'error');
+            }
         }
 
         function toggleBonusSystem(enabled) {
@@ -1800,57 +1937,67 @@
                 return;
             }
 
-            const data = dataManager.getData();
-            data.settings.bonusEnabled = enabled;
-            dataManager.saveData(data);
-            showNotification(`Bonus system ${enabled ? 'enabled' : 'disabled'}!`, 'success');
+            try {
+                const data = dataManager.getData();
+                data.settings.bonusEnabled = enabled;
+                dataManager.saveData(data);
+                showNotification(`Bonus system ${enabled ? 'enabled' : 'disabled'}!`, 'success');
+            } catch (error) {
+                console.error('Error toggling bonus system:', error);
+                showNotification('Error updating bonus system!', 'error');
+            }
         }
 
         function loadModerators() {
-            const data = dataManager.getData();
-            const container = document.getElementById('moderatorsList');
-            container.innerHTML = '';
-            
-            const canEdit = checkPermission('settings', 'edit');
-            
-            data.moderators.forEach(moderator => {
-                const div = document.createElement('div');
-                div.className = 'card';
+            try {
+                const data = dataManager.getData();
+                const container = document.getElementById('moderatorsList');
+                container.innerHTML = '';
                 
-                // Create permissions summary
-                let permissionsSummary = '';
-                if (moderator.permissions) {
-                    const sections = Object.keys(moderator.permissions);
-                    sections.forEach(section => {
-                        const perms = moderator.permissions[section];
-                        if (perms.view || perms.edit) {
-                            const permTypes = [];
-                            if (perms.view) permTypes.push('View');
-                            if (perms.edit) permTypes.push('Edit');
-                            permissionsSummary += `<br><small>${section.charAt(0).toUpperCase() + section.slice(1)}: ${permTypes.join(', ')}</small>`;
-                        }
-                    });
-                }
+                const canEdit = checkPermission('settings', 'edit');
+                
+                data.moderators.forEach(moderator => {
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    
+                    // Create permissions summary
+                    let permissionsSummary = '';
+                    if (moderator.permissions) {
+                        const sections = Object.keys(moderator.permissions);
+                        sections.forEach(section => {
+                            const perms = moderator.permissions[section];
+                            if (perms.view || perms.edit) {
+                                const permTypes = [];
+                                if (perms.view) permTypes.push('View');
+                                if (perms.edit) permTypes.push('Edit');
+                                permissionsSummary += `<br><small>${section.charAt(0).toUpperCase() + section.slice(1)}: ${permTypes.join(', ')}</small>`;
+                            }
+                        });
+                    }
 
-                const actionsHtml = canEdit ? `
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-primary" onclick="editModerator(${moderator.id})">Edit</button>
-                        <button class="btn btn-sm btn-${moderator.enabled ? 'warning' : 'success'}" onclick="toggleModerator(${moderator.id})">
-                            ${moderator.enabled ? 'Disable' : 'Enable'}
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('moderator', ${moderator.id}, '${moderator.name}')">Delete</button>
-                    </div>
-                ` : '<span class="text-secondary">View Only</span>';
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editModerator(${moderator.id})">Edit</button>
+                            <button class="btn btn-sm btn-${moderator.enabled ? 'warning' : 'success'}" onclick="toggleModerator(${moderator.id})">
+                                ${moderator.enabled ? 'Disable' : 'Enable'}
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('moderator', ${moderator.id}, '${moderator.name}')">Delete</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
 
-                div.innerHTML = `
-                    <h4>${moderator.name}</h4>
-                    <p>Phone: ${moderator.phone}</p>
-                    <p>Status: <span class="status-badge status-${moderator.enabled ? 'active' : 'blocked'}">${moderator.enabled ? 'Active' : 'Disabled'}</span></p>
-                    <p>Permissions: ${permissionsSummary || '<small>No permissions assigned</small>'}</p>
-                    ${actionsHtml}
-                `;
-                container.appendChild(div);
-            });
+                    div.innerHTML = `
+                        <h4>${moderator.name}</h4>
+                        <p>Phone: ${moderator.phone}</p>
+                        <p>Status: <span class="status-badge status-${moderator.enabled ? 'active' : 'blocked'}">${moderator.enabled ? 'Active' : 'Disabled'}</span></p>
+                        <p>Permissions: ${permissionsSummary || '<small>No permissions assigned</small>'}</p>
+                        ${actionsHtml}
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading moderators:', error);
+                showNotification('Error loading moderators!', 'error');
+            }
         }
 
         function openModeratorModal(moderatorId = null) {
@@ -1892,13 +2039,18 @@
                 return;
             }
 
-            const data = dataManager.getData();
-            const moderator = data.moderators.find(m => m.id === id);
-            if (moderator) {
-                moderator.enabled = !moderator.enabled;
-                dataManager.saveData(data);
-                loadModerators();
-                showNotification(`Moderator ${moderator.enabled ? 'enabled' : 'disabled'}!`, 'success');
+            try {
+                const data = dataManager.getData();
+                const moderator = data.moderators.find(m => m.id === id);
+                if (moderator) {
+                    moderator.enabled = !moderator.enabled;
+                    dataManager.saveData(data);
+                    loadModerators();
+                    showNotification(`Moderator ${moderator.enabled ? 'enabled' : 'disabled'}!`, 'success');
+                }
+            } catch (error) {
+                console.error('Error toggling moderator:', error);
+                showNotification('Error updating moderator status!', 'error');
             }
         }
 
@@ -1908,50 +2060,62 @@
                 return;
             }
 
-            const data = dataManager.getData();
-            const backupDate = new Date();
-            const backup = {
-                ...data,
-                backupDate: backupDate.toISOString()
-            };
-            
-            // Get existing backups or initialize
-            let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
-            
-            // Create backup entry
-            const backupEntry = {
-                id: Date.now(),
-                name: `Backup_${backupDate.toISOString().split('T')[0]}`,
-                date: backupDate.toLocaleDateString(),
-                time: backupDate.toLocaleTimeString(),
-                size: JSON.stringify(backup).length,
-                data: backup
-            };
-            
-            // Add to backups list
-            backups.push(backupEntry);
-            localStorage.setItem('barbershop_backups', JSON.stringify(backups));
-            
-            // Update UI
-            loadBackups();
-            showNotification('Backup created successfully!', 'success');
+            try {
+                const data = dataManager.getData();
+                const backupDate = new Date();
+                const backup = {
+                    ...data,
+                    backupDate: backupDate.toISOString()
+                };
+                
+                // Get existing backups or initialize
+                let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                
+                // Create backup entry
+                const backupEntry = {
+                    id: Date.now(),
+                    name: `Backup_${backupDate.toISOString().split('T')[0]}_${backupDate.getHours()}${backupDate.getMinutes()}`,
+                    date: backupDate.toLocaleDateString(),
+                    time: backupDate.toLocaleTimeString(),
+                    size: JSON.stringify(backup).length,
+                    data: backup
+                };
+                
+                // Add to backups list
+                backups.push(backupEntry);
+                localStorage.setItem('barbershop_backups', JSON.stringify(backups));
+                
+                // Update UI
+                loadBackups();
+                showNotification('Backup created successfully!', 'success');
+            } catch (error) {
+                console.error('Error creating backup:', error);
+                showNotification('Error creating backup!', 'error');
+            }
         }
 
         function downloadBackup(backupId) {
-            const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
-            const backup = backups.find(b => b.id === backupId);
-            
-            if (backup) {
-                const blob = new Blob([JSON.stringify(backup.data)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${backup.name}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showNotification('Backup downloaded!', 'success');
-            } else {
-                showNotification('Backup not found!', 'error');
+            try {
+                const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                const backup = backups.find(b => b.id === backupId);
+                
+                if (backup) {
+                    const blob = new Blob([JSON.stringify(backup.data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${backup.name}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showNotification('Backup downloaded!', 'success');
+                } else {
+                    showNotification('Backup not found!', 'error');
+                }
+            } catch (error) {
+                console.error('Error downloading backup:', error);
+                showNotification('Error downloading backup!', 'error');
             }
         }
 
@@ -1971,10 +2135,21 @@
                     reader.onload = function(e) {
                         try {
                             const backup = JSON.parse(e.target.result);
+                            
+                            // Validate backup structure
+                            if (!backup.services || !backup.users || !backup.settings) {
+                                throw new Error('Invalid backup format');
+                            }
+                            
                             dataManager.saveData(backup);
                             showNotification('Backup imported successfully!', 'success');
                             loadDashboardData();
+                            
+                            // Refresh current page
+                            const currentPage = document.querySelector('.nav-link.active').getAttribute('data-page');
+                            showPage(currentPage);
                         } catch (error) {
+                            console.error('Error importing backup:', error);
                             showNotification('Invalid backup file!', 'error');
                         }
                     };
@@ -1985,34 +2160,39 @@
         }
 
         function loadBackups() {
-            const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
-            const tbody = document.getElementById('backupsTable');
-            tbody.innerHTML = '';
-            
-            const canEdit = checkPermission('settings', 'edit');
-            
-            backups.forEach(backup => {
-                const row = document.createElement('tr');
-                const actionsHtml = canEdit ? `
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
-                        <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('backup', ${backup.id}, '${backup.name}')">Delete</button>
-                    </div>
-                ` : `
-                    <div class="action-buttons">
-                        <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
-                    </div>
-                `;
+            try {
+                const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                const tbody = document.getElementById('backupsTable');
+                tbody.innerHTML = '';
+                
+                const canEdit = checkPermission('settings', 'edit');
+                
+                backups.forEach(backup => {
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('backup', ${backup.id}, '${backup.name}')">Delete</button>
+                        </div>
+                    ` : `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
+                        </div>
+                    `;
 
-                row.innerHTML = `
-                    <td>${backup.name}</td>
-                    <td>${backup.date}</td>
-                    <td>${backup.time}</td>
-                    <td>${formatFileSize(backup.size)}</td>
-                    <td>${actionsHtml}</td>
-                `;
-                tbody.appendChild(row);
-            });
+                    row.innerHTML = `
+                        <td>${backup.name}</td>
+                        <td>${backup.date}</td>
+                        <td>${backup.time}</td>
+                        <td>${formatFileSize(backup.size)}</td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading backups:', error);
+                showNotification('Error loading backups!', 'error');
+            }
         }
 
         function formatFileSize(bytes) {
@@ -2060,9 +2240,15 @@
                     body: JSON.stringify(payload)
                 });
                 
-                return await response.json();
+                const result = await response.json();
+                if (!result.ok) {
+                    throw new Error(result.description || 'Failed to send message');
+                }
+                
+                return result;
             } catch (error) {
                 console.error('Error sending Telegram message:', error);
+                logBotActivity(`Error sending message: ${error.message}`);
                 return null;
             }
         }
@@ -2091,6 +2277,12 @@
             }
             
             try {
+                // Show loading state
+                const importBtn = document.querySelector('button[onclick="importBotAPI()"]');
+                const originalText = importBtn.textContent;
+                importBtn.textContent = 'Connecting...';
+                importBtn.disabled = true;
+                
                 // Test the bot token
                 const response = await fetch(`https://api.telegram.org/bot${token}/getMe`);
                 const data = await response.json();
@@ -2127,10 +2319,22 @@
                     
                 } else {
                     showNotification(`Bot API Error: ${data.description}`, 'error');
+                    logBotActivity(`Connection failed: ${data.description}`);
                 }
+                
+                // Reset button state
+                importBtn.textContent = originalText;
+                importBtn.disabled = false;
+                
             } catch (error) {
                 showNotification('Failed to connect to Telegram API!', 'error');
+                logBotActivity(`Connection error: ${error.message}`);
                 console.error('Bot connection error:', error);
+                
+                // Reset button state
+                const importBtn = document.querySelector('button[onclick="importBotAPI()"]');
+                importBtn.textContent = 'Import Bot API';
+                importBtn.disabled = false;
             }
         }
 
@@ -2154,9 +2358,12 @@
                 const data = await response.json();
                 if (data.ok) {
                     logBotActivity('Bot commands configured successfully');
+                } else {
+                    logBotActivity(`Failed to set commands: ${data.description}`);
                 }
             } catch (error) {
                 console.error('Error setting up bot commands:', error);
+                logBotActivity(`Error setting commands: ${error.message}`);
             }
         }
 
@@ -2176,43 +2383,52 @@
                 return;
             }
 
-            const config = {
-                welcomeMessage: document.getElementById('welcomeMessage').value,
-                autoReply: document.getElementById('autoReply').value
-            };
-            
-            // Get existing bot config
-            const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
-            botConfig.settings = config;
-            
-            localStorage.setItem('telegram_bot_config', JSON.stringify(botConfig));
-            showNotification('Bot configuration saved!', 'success');
-            logBotActivity('Bot configuration updated');
+            try {
+                const config = {
+                    welcomeMessage: document.getElementById('welcomeMessage').value,
+                    autoReply: document.getElementById('autoReply').value
+                };
+                
+                // Get existing bot config
+                const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
+                botConfig.settings = config;
+                
+                localStorage.setItem('telegram_bot_config', JSON.stringify(botConfig));
+                showNotification('Bot configuration saved!', 'success');
+                logBotActivity('Bot configuration updated');
+            } catch (error) {
+                console.error('Error saving bot config:', error);
+                showNotification('Error saving bot configuration!', 'error');
+            }
         }
 
         function logBotActivity(message) {
-            const container = document.getElementById('activityLogContainer');
-            const timestamp = new Date().toLocaleTimeString();
-            
-            // Create new log entry
-            const logEntry = document.createElement('div');
-            logEntry.style.marginBottom = '0.5rem';
-            logEntry.style.padding = '0.5rem';
-            logEntry.style.backgroundColor = 'var(--background-color)';
-            logEntry.style.borderRadius = '0.25rem';
-            logEntry.innerHTML = `<small style="color: var(--text-secondary);">[${timestamp}]</small> ${message}`;
-            
-            // Remove "No activity" message if it exists
-            if (container.children.length === 1 && container.children[0].tagName === 'P') {
-                container.innerHTML = '';
-            }
-            
-            // Add new entry at the top
-            container.insertBefore(logEntry, container.firstChild);
-            
-            // Keep only last 10 entries
-            while (container.children.length > 10) {
-                container.removeChild(container.lastChild);
+            try {
+                const container = document.getElementById('activityLogContainer');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                // Create new log entry
+                const logEntry = document.createElement('div');
+                logEntry.style.marginBottom = '0.5rem';
+                logEntry.style.padding = '0.5rem';
+                logEntry.style.backgroundColor = 'var(--background-color)';
+                logEntry.style.borderRadius = '0.25rem';
+                logEntry.innerHTML = `<small style="color: var(--text-secondary);">[${timestamp}]</small> ${message}`;
+                
+                // Remove "No activity" message if it exists
+                if (container.children.length === 1 && container.children[0].tagName === 'P') {
+                    container.innerHTML = '';
+                }
+                
+                // Add new entry at the top
+                container.insertBefore(logEntry, container.firstChild);
+                
+                // Keep only last 10 entries
+                while (container.children.length > 10) {
+                    container.removeChild(container.lastChild);
+                }
+            } catch (error) {
+                console.error('Error logging bot activity:', error);
             }
         }
 
@@ -2231,6 +2447,11 @@
             }
             
             try {
+                const testBtn = document.querySelector('button[onclick="testTelegramBot()"]');
+                const originalText = testBtn.textContent;
+                testBtn.textContent = 'Testing...';
+                testBtn.disabled = true;
+                
                 const response = await fetch(`https://api.telegram.org/bot${botConfig.token}/getMe`);
                 const data = await response.json();
                 
@@ -2241,9 +2462,17 @@
                     showNotification('Bot test failed!', 'error');
                     logBotActivity(`Bot test failed: ${data.description}`);
                 }
+                
+                testBtn.textContent = originalText;
+                testBtn.disabled = false;
+                
             } catch (error) {
                 showNotification('Error testing bot!', 'error');
                 logBotActivity(`Bot test error: ${error.message}`);
+                
+                const testBtn = document.querySelector('button[onclick="testTelegramBot()"]');
+                testBtn.textContent = 'Test Bot';
+                testBtn.disabled = false;
             }
         }
 
@@ -2264,8 +2493,13 @@
             // In a real application, you would configure the actual webhook URL
             const webhookUrl = prompt('Enter your webhook URL (leave empty for polling mode):');
             
-            if (webhookUrl) {
+            if (webhookUrl !== null) {
                 try {
+                    const webhookBtn = document.querySelector('button[onclick="setupWebhook()"]');
+                    const originalText = webhookBtn.textContent;
+                    webhookBtn.textContent = 'Setting up...';
+                    webhookBtn.disabled = true;
+                    
                     const response = await fetch(`https://api.telegram.org/bot${botConfig.token}/setWebhook`, {
                         method: 'POST',
                         headers: {
@@ -2276,17 +2510,29 @@
                     
                     const data = await response.json();
                     if (data.ok) {
-                        showNotification('Webhook configured successfully!', 'success');
-                        logBotActivity(`Webhook set to: ${webhookUrl}`);
+                        if (webhookUrl) {
+                            showNotification('Webhook configured successfully!', 'success');
+                            logBotActivity(`Webhook set to: ${webhookUrl}`);
+                        } else {
+                            showNotification('Webhook removed - using polling mode', 'success');
+                            logBotActivity('Webhook removed - using polling mode');
+                        }
                     } else {
                         showNotification(`Webhook error: ${data.description}`, 'error');
+                        logBotActivity(`Webhook error: ${data.description}`);
                     }
+                    
+                    webhookBtn.textContent = originalText;
+                    webhookBtn.disabled = false;
+                    
                 } catch (error) {
                     showNotification('Error setting up webhook!', 'error');
+                    logBotActivity(`Webhook setup error: ${error.message}`);
+                    
+                    const webhookBtn = document.querySelector('button[onclick="setupWebhook()"]');
+                    webhookBtn.textContent = 'Setup Webhook';
+                    webhookBtn.disabled = false;
                 }
-            } else {
-                showNotification('Using polling mode (no webhook)', 'success');
-                logBotActivity('Webhook removed - using polling mode');
             }
         }
 
@@ -2301,6 +2547,7 @@
                     logBotActivity('Bot disconnected and webhook removed');
                 } catch (error) {
                     console.error('Error removing webhook:', error);
+                    logBotActivity(`Error removing webhook: ${error.message}`);
                 }
             }
             
@@ -2323,123 +2570,179 @@
 
         // Load bot configuration on page load
         function loadBotConfiguration() {
-            const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
-            
-            if (botConfig.connected && botConfig.token) {
-                document.getElementById('botToken').value = botConfig.token;
-                document.getElementById('botUsername').value = `@${botConfig.username}`;
-                document.getElementById('botStatus').textContent = 'Connected';
-                document.getElementById('botStatus').className = 'status-badge status-active';
-                document.getElementById('botConfigPanel').style.display = 'block';
+            try {
+                const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
                 
-                if (botConfig.settings) {
-                    document.getElementById('welcomeMessage').value = botConfig.settings.welcomeMessage || '';
-                    document.getElementById('autoReply').value = botConfig.settings.autoReply || 'enabled';
+                if (botConfig.connected && botConfig.token) {
+                    document.getElementById('botToken').value = botConfig.token;
+                    document.getElementById('botUsername').value = `@${botConfig.username}`;
+                    document.getElementById('botStatus').textContent = 'Connected';
+                    document.getElementById('botStatus').className = 'status-badge status-active';
+                    document.getElementById('botConfigPanel').style.display = 'block';
+                    
+                    if (botConfig.settings) {
+                        document.getElementById('welcomeMessage').value = botConfig.settings.welcomeMessage || '';
+                        document.getElementById('autoReply').value = botConfig.settings.autoReply || 'enabled';
+                    }
+                    
+                    botConnected = true;
+                    logBotActivity(`Bot session restored: ${botConfig.firstName} (@${botConfig.username})`);
                 }
-                
-                botConnected = true;
-                logBotActivity(`Bot session restored: ${botConfig.firstName} (@${botConfig.username})`);
+            } catch (error) {
+                console.error('Error loading bot configuration:', error);
             }
         }
 
         // Form Handlers
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            login();
-        });
-
-        document.getElementById('serviceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const service = {
-                name: document.getElementById('serviceName').value,
-                description: document.getElementById('serviceDescription').value,
-                duration: parseInt(document.getElementById('serviceDuration').value),
-                price: parseFloat(document.getElementById('servicePrice').value)
-            };
-            
-            if (currentEditingId) {
-                dataManager.updateService(currentEditingId, service);
-                showNotification('Service updated successfully!', 'success');
-            } else {
-                dataManager.addService(service);
-                showNotification('Service added successfully!', 'success');
-            }
-            
-            closeModal('serviceModal');
-            loadServices();
-            loadDashboardData();
-        });
-
-        document.getElementById('userForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const user = {
-                name: document.getElementById('userName').value,
-                phone: document.getElementById('userPhone').value,
-                telegramId: document.getElementById('userTelegramId').value,
-                bonuses: parseInt(document.getElementById('userBonuses').value)
-            };
-            
-            if (currentEditingId) {
-                dataManager.updateUser(currentEditingId, user);
-                showNotification('User updated successfully!', 'success');
-            } else {
-                dataManager.addUser(user);
-                showNotification('User added successfully!', 'success');
-            }
-            
-            closeModal('userModal');
-            loadUsers();
-            loadDashboardData();
-        });
-
-        document.getElementById('blockUserForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const blockData = {
-                type: document.getElementById('blockType').value,
-                duration: document.getElementById('blockDuration').value,
-                reason: document.getElementById('blockReason').value
-            };
-            
-            dataManager.blockUser(currentEditingId, blockData);
-            closeModal('blockUserModal');
-            loadUsers();
-            showNotification('User blocked successfully!', 'success');
-        });
-
-        document.getElementById('moderatorForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const moderator = {
-                id: currentEditingId || Date.now(),
-                name: document.getElementById('moderatorName').value,
-                phone: document.getElementById('moderatorPhone').value,
-                password: document.getElementById('moderatorPassword').value,
-                permissions: { ...moderatorPermissions },
-                enabled: true,
-                createdAt: new Date().toISOString()
-            };
-            
-            const data = dataManager.getData();
-            
-            if (currentEditingId) {
-                // Update existing moderator
-                const index = data.moderators.findIndex(m => m.id === currentEditingId);
-                if (index !== -1) {
-                    data.moderators[index] = { ...data.moderators[index], ...moderator };
-                    showNotification('Moderator updated successfully!', 'success');
-                }
-            } else {
-                // Add new moderator
-                data.moderators.push(moderator);
-                showNotification('Moderator added successfully!', 'success');
-            }
-            
-            dataManager.saveData(data);
-            closeModal('moderatorModal');
-            loadModerators();
-        });
-
-        // Event Listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                login();
+            });
+
+            // Service form
+            document.getElementById('serviceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('serviceName').value.trim();
+                const description = document.getElementById('serviceDescription').value.trim();
+                const duration = parseInt(document.getElementById('serviceDuration').value);
+                const price = parseFloat(document.getElementById('servicePrice').value);
+                
+                if (!name || duration <= 0 || price < 0) {
+                    showNotification('Please fill in all required fields correctly!', 'error');
+                    return;
+                }
+                
+                const service = { name, description, duration, price };
+                
+                try {
+                    if (currentEditingId) {
+                        dataManager.updateService(currentEditingId, service);
+                        showNotification('Service updated successfully!', 'success');
+                    } else {
+                        dataManager.addService(service);
+                        showNotification('Service added successfully!', 'success');
+                    }
+                    
+                    closeModal('serviceModal');
+                    loadServices();
+                    loadDashboardData();
+                } catch (error) {
+                    console.error('Error saving service:', error);
+                    showNotification('Error saving service!', 'error');
+                }
+            });
+
+            // User form
+            document.getElementById('userForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('userName').value.trim();
+                const phone = document.getElementById('userPhone').value.trim();
+                const telegramId = document.getElementById('userTelegramId').value.trim();
+                const bonuses = parseInt(document.getElementById('userBonuses').value) || 0;
+                
+                if (!name || !phone) {
+                    showNotification('Please fill in all required fields!', 'error');
+                    return;
+                }
+                
+                const user = { name, phone, telegramId, bonuses };
+                
+                try {
+                    if (currentEditingId) {
+                        dataManager.updateUser(currentEditingId, user);
+                        showNotification('User updated successfully!', 'success');
+                    } else {
+                        dataManager.addUser(user);
+                        showNotification('User added successfully!', 'success');
+                    }
+                    
+                    closeModal('userModal');
+                    loadUsers();
+                    loadDashboardData();
+                } catch (error) {
+                    console.error('Error saving user:', error);
+                    showNotification('Error saving user!', 'error');
+                }
+            });
+
+            // Block user form
+            document.getElementById('blockUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const blockData = {
+                    type: document.getElementById('blockType').value,
+                    duration: document.getElementById('blockDuration').value,
+                    reason: document.getElementById('blockReason').value.trim()
+                };
+                
+                try {
+                    dataManager.blockUser(currentEditingId, blockData);
+                    closeModal('blockUserModal');
+                    loadUsers();
+                    showNotification('User blocked successfully!', 'success');
+                } catch (error) {
+                    console.error('Error blocking user:', error);
+                    showNotification('Error blocking user!', 'error');
+                }
+            });
+
+            // Moderator form
+            document.getElementById('moderatorForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('moderatorName').value.trim();
+                const phone = document.getElementById('moderatorPhone').value.trim();
+                const password = document.getElementById('moderatorPassword').value;
+                
+                if (!name || !phone || !password) {
+                    showNotification('Please fill in all required fields!', 'error');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showNotification('Password must be at least 6 characters!', 'error');
+                    return;
+                }
+                
+                const moderator = {
+                    id: currentEditingId || Date.now(),
+                    name,
+                    phone,
+                    password,
+                    permissions: { ...moderatorPermissions },
+                    enabled: true,
+                    createdAt: new Date().toISOString()
+                };
+                
+                try {
+                    const data = dataManager.getData();
+                    
+                    if (currentEditingId) {
+                        // Update existing moderator
+                        const index = data.moderators.findIndex(m => m.id === currentEditingId);
+                        if (index !== -1) {
+                            data.moderators[index] = { ...data.moderators[index], ...moderator };
+                            showNotification('Moderator updated successfully!', 'success');
+                        }
+                    } else {
+                        // Add new moderator
+                        data.moderators.push(moderator);
+                        showNotification('Moderator added successfully!', 'success');
+                    }
+                    
+                    dataManager.saveData(data);
+                    closeModal('moderatorModal');
+                    loadModerators();
+                } catch (error) {
+                    console.error('Error saving moderator:', error);
+                    showNotification('Error saving moderator!', 'error');
+                }
+            });
+
             // Navigation
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -2475,6 +2778,10 @@
                     closeDeleteModal();
                 }
             });
+
+            // Initialize the application
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
         });
 
         // Utility Functions
@@ -2484,6 +2791,14 @@
         }
 
         function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            });
+            
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
@@ -2503,11 +2818,16 @@
             }, 5000);
         }
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Show login page by default
-            document.getElementById('loginPage').style.display = 'flex';
-            document.getElementById('dashboard').classList.remove('active');
+        // Error handling for uncaught errors
+        window.addEventListener('error', function(e) {
+            console.error('Uncaught error:', e.error);
+            showNotification('An unexpected error occurred!', 'error');
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+            showNotification('An unexpected error occurred!', 'error');
         });
     </script>
 </body>
