@@ -1238,6 +1238,18 @@
         </div>
     </div>
 
+    <!-- Exit Confirmation Modal -->
+    <div id="exitModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">🚪</div>
+            <div class="delete-modal-title">Are you sure you want to exit?</div>
+            <div class="delete-modal-buttons">
+                <button class="btn btn-secondary" onclick="closeExitModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmExit()">Exit</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Global Variables
         const ADMIN_PASSWORD = 'R00T$522166!Adm!n#ARIA*DEV';
@@ -1573,15 +1585,26 @@
         }
 
         function logout() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        function closeExitModal() {
+            document.getElementById('exitModal').classList.remove('active');
+        }
+
+        function confirmExit() {
             currentUser = null;
             document.getElementById('loginPage').style.display = 'flex';
             document.getElementById('dashboard').classList.remove('active');
             document.getElementById('password').value = '';
+            document.getElementById('exitModal').classList.remove('active');
             
             // Reset navigation visibility
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.style.display = 'block';
             });
+            
+            showNotification('You have been logged out successfully', 'success');
         }
 
         function showDashboard() {
@@ -1708,13 +1731,6 @@
             
             modal.classList.add('active');
         }
-
-        function editService(id) {
-            openServiceModal(id);
-        }
-
-        // Users Management
-        function loadUsers()
 
         function editService(id) {
             openServiceModal(id);
@@ -2776,6 +2792,13 @@
             document.getElementById('deleteModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeDeleteModal();
+                }
+            });
+
+            // Close exit modal when clicking outside
+            document.getElementById('exitModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeExitModal();
                 }
             });
 
