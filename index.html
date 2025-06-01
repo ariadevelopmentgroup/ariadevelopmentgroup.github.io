@@ -1252,8 +1252,7 @@
 
     <script>
         // Global Variables
-        // SHA-256 hash of the admin password: R00T$522166!Adm!n#ARIA*DEV
-        const ADMIN_PASSWORD_HASH = 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9';
+        const ADMIN_PASSWORD = 'R00T$522166!Adm!n#ARIA*DEV';
         const BOT_TOKEN = '7841202674:AAEm7NL-xgdCWQac1G393ypShtGrDeCyWZA';
         const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
@@ -1266,47 +1265,6 @@
             services: { view: false, edit: false },
             settings: { view: false, edit: false }
         };
-
-        // Robust SHA-256 Hash Function
-        async function sha256(message) {
-            try {
-                // Try using Web Crypto API first
-                if (typeof crypto !== 'undefined' && crypto.subtle) {
-                    const msgBuffer = new TextEncoder().encode(message);
-                    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                    const hashArray = Array.from(new Uint8Array(hashBuffer));
-                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                    return hashHex;
-                }
-            } catch (error) {
-                console.warn('Web Crypto API not available, using fallback hash');
-            }
-            
-            // Fallback to a more robust hash function
-            return await fallbackSha256(message);
-        }
-
-        // Enhanced fallback SHA-256 implementation
-        async function fallbackSha256(message) {
-            // Simple but effective hash for the specific password
-            // This is a deterministic hash that will always produce the same result
-            const password = 'R00T$522166!Adm!n#ARIA*DEV';
-            if (message === password) {
-                return 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9';
-            }
-            
-            // For other strings, use a simple hash
-            let hash = 0;
-            for (let i = 0; i < message.length; i++) {
-                const char = message.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32-bit integer
-            }
-            
-            // Convert to hex and pad to 64 characters
-            const hexHash = Math.abs(hash).toString(16);
-            return hexHash.padStart(64, '0');
-        }
 
         // Data Storage
         class DataManager {
@@ -1563,7 +1521,7 @@
         }
 
         // Authentication
-        async function login() {
+        function login() {
             const userType = document.getElementById('userType').value;
             const password = document.getElementById('password').value;
 
@@ -1572,42 +1530,29 @@
                 return;
             }
 
-            try {
-                if (userType === 'admin') {
-                    // Hash the entered password and compare with stored hash
-                    const enteredPasswordHash = await sha256(password);
-                    console.log('Entered password hash:', enteredPasswordHash);
-                    console.log('Stored admin hash:', ADMIN_PASSWORD_HASH);
+            if (userType === 'admin' && password === ADMIN_PASSWORD) {
+                currentUser = { type: 'admin', name: 'Administrator' };
+                showDashboard();
+                showNotification('Welcome, Administrator!', 'success');
+            } else if (userType === 'moderator') {
+                const data = dataManager.getData();
+                const moderator = data.moderators.find(m => m.password === password && m.enabled);
+                if (moderator) {
+                    currentUser = { 
+                        type: 'moderator', 
+                        name: moderator.name, 
+                        permissions: moderator.permissions 
+                    };
+                    showDashboard();
+                    showNotification(`Welcome, ${moderator.name}!`, 'success');
                     
-                    if (enteredPasswordHash === ADMIN_PASSWORD_HASH) {
-                        currentUser = { type: 'admin', name: 'Administrator' };
-                        showDashboard();
-                        showNotification('Welcome, Administrator!', 'success');
-                    } else {
-                        showNotification('Invalid administrator credentials!', 'error');
-                        console.log('Password hash mismatch');
-                    }
-                } else if (userType === 'moderator') {
-                    const data = dataManager.getData();
-                    const moderator = data.moderators.find(m => m.password === password && m.enabled);
-                    if (moderator) {
-                        currentUser = { 
-                            type: 'moderator', 
-                            name: moderator.name, 
-                            permissions: moderator.permissions 
-                        };
-                        showDashboard();
-                        showNotification(`Welcome, ${moderator.name}!`, 'success');
-                        
-                        // Apply permission restrictions
-                        applyModeratorPermissions(moderator.permissions);
-                    } else {
-                        showNotification('Invalid moderator credentials or account disabled!', 'error');
-                    }
+                    // Apply permission restrictions
+                    applyModeratorPermissions(moderator.permissions);
+                } else {
+                    showNotification('Invalid moderator credentials or account disabled!', 'error');
                 }
-            } catch (error) {
-                console.error('Login error:', error);
-                showNotification('Login failed. Please try again.', 'error');
+            } else {
+                showNotification('Invalid credentials!', 'error');
             }
         }
 
@@ -2272,7 +2217,7 @@
             else return (bytes / 1048576).toFixed(1) + ' MB';
         }
 
-        async function changePassword() {
+        function changePassword() {
             if (!checkPermission('settings', 'edit')) {
                 showNotification('You do not have permission to change passwords!', 'error');
                 return;
@@ -2283,17 +2228,9 @@
                 showNotification('Password must be at least 8 characters!', 'error');
                 return;
             }
-            
-            try {
-                // Hash the new password and update the stored hash
-                const newPasswordHash = await sha256(newPassword);
-                // In a real application, you would update this securely on the server
-                showNotification('Password changed successfully!', 'success');
-                document.getElementById('newPassword').value = '';
-            } catch (error) {
-                console.error('Error changing password:', error);
-                showNotification('Error changing password!', 'error');
-            }
+            // In a real application, you would update the password in a secure way
+            showNotification('Password changed successfully!', 'success');
+            document.getElementById('newPassword').value = '';
         }
 
         // Telegram Bot Functions
@@ -2915,25 +2852,131 @@
             console.error('Unhandled promise rejection:', e.reason);
             showNotification('An unexpected error occurred!', 'error');
         });
-
-        // Verify admin password hash on page load
-        (async function() {
-            try {
-                // Test the admin password hash
-                const testHash = await sha256('R00T$522166!Adm!n#ARIA*DEV');
-                console.log('Generated hash for admin password:', testHash);
-                console.log('Stored hash:', ADMIN_PASSWORD_HASH);
-                console.log('Hash verification:', testHash === ADMIN_PASSWORD_HASH ? 'PASSED' : 'FAILED');
-                
-                if (testHash !== ADMIN_PASSWORD_HASH) {
-                    console.warn('Admin password hash verification failed. Login may not work correctly.');
-                } else {
-                    console.log('Admin password hash verified successfully.');
-                }
-            } catch (error) {
-                console.error('Error verifying admin password hash:', error);
-            }
-        })();
     </script>
+    
+    <!-- Չթույլատրված գործողությունների արգելափակման կոդի Սկիզբ -->
+    <script>
+(function() {
+    // Թույլատրված տարրերը (որոնման դաշտերը)
+    function isAllowedInput(element) {
+        return element.tagName.toLowerCase() === 'input' &&
+               (element.type === 'search' || element.type === 'text') ||
+               element.tagName.toLowerCase() === 'textarea';
+    }
+
+    // Կանխել աջ սեղմումը (Right-click)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // Կանխել ձախ և աջ սեղմումները
+    document.addEventListener('mousedown', function(e) {
+        if (e.button === 2 || e.button === 0) { // 2 - աջ կոճակ, 0 - ձախ կոճակ
+            e.preventDefault();
+        }
+    });
+
+    // Կանխել "View Source" և "Inspect Element"
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey && (e.key === 'u' || e.key === 'U')) ||  // Ctrl + U
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||  // Ctrl + Shift + I / J / C
+            e.key === 'F12') {  // F12
+            e.preventDefault();
+        }
+    });
+
+    // Կանխել տեքստի ընտրությունը
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+    });
+
+    // Կանխել պատճենումը
+    document.addEventListener('copy', function(e) {
+        e.preventDefault();
+    });
+
+    // Կանխել բովանդակության տեղադրումը
+    document.addEventListener('paste', function(e) {
+        e.preventDefault();
+    });
+
+    // Կանխել "Պահպանել որպես" և պատկերների պահպանումը
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName.toLowerCase() === 'img' || e.target.tagName.toLowerCase() === 'video') {
+            e.preventDefault();
+        }
+    });
+
+    // Կանխել "Print Screen" (Screenshot)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'PrintScreen') {
+            e.preventDefault();
+        }
+    });
+
+    // Մթնել էկրանը՝ սքրինշոթերը կանխելու համար
+    let isDimmed = false;
+    const dimScreen = () => {
+        if (!isDimmed) {
+            let overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            overlay.style.zIndex = '9999';
+            document.body.appendChild(overlay);
+            isDimmed = true;
+            setTimeout(() => {
+                overlay.remove();
+                isDimmed = false;
+            }, 3000); // 3 վայրկյան հետո հեռացնել մթնեցումը
+        }
+    };
+
+    // Հետևել սքրինշոթի փորձերին
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'PrintScreen') {
+            dimScreen();
+        }
+    });
+
+    // Կանխել ստեղնաշարի ցանկացած օգտագործում, բացի որոնման դաշտից
+    document.addEventListener('keydown', function(e) {
+        if (!isAllowedInput(document.activeElement)) {
+            e.preventDefault();
+        }
+    });
+
+    // Կանխել "Drag & Drop"-ը, որպեսզի բովանդակությունը չտեղափոխվի
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('drop', function(e) {
+        e.preventDefault();
+    });
+
+    // Հետևել էջի տեսանելիության փոփոխություններին (օգտագործողների փորձերը բացահայտելու համար)
+    window.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            dimScreen();
+        }
+    });
+
+    // Կանխել տպումը (Ctrl + P)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey && e.key === 'p') || e.key === 'F12') {
+            e.preventDefault();
+        }
+    });
+
+})();
+</script>
+    <noscript class="no-js-warning">
+        <i>Javascript-ը պարտադիր է!</i>
+    </noscript>
+    <!-- Չթույլատրված գործողությունների արգելափակման կոդի ավարտ -->
 </body>
 </html>
