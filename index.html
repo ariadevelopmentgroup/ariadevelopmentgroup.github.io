@@ -1,0 +1,2857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-control:disabled {
+            background-color: var(--background-color);
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            gap: 0.5rem;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background-color: #059669;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background-color: #dc2626;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background-color: #d97706;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #475569;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-xs {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .dashboard.active {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--card-background);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            gap: 0.75rem;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-background);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .stat-buttons {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-background);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background-color: var(--background-color);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table tr:hover {
+            background-color: var(--background-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--card-background);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Delete Confirmation Modal */
+        .delete-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+        }
+
+        .delete-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .delete-modal-content {
+            background: var(--card-background);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .delete-modal-icon {
+            font-size: 3rem;
+            color: var(--danger-color);
+            margin-bottom: 1rem;
+        }
+
+        .delete-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .delete-modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        /* Permissions Grid */
+        .permissions-grid {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto auto;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+        }
+
+        .permission-section {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .permission-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--success-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger-color);
+        }
+
+        .notification.warning {
+            background: var(--warning-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .table-container {
+                font-size: 0.875rem;
+            }
+
+            .permissions-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .permission-toggle {
+                justify-content: center;
+            }
+
+            .modal-content {
+                max-width: 95%;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.875rem;
+            }
+
+            .notification {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                transform: translateY(100%);
+            }
+
+            .notification.show {
+                transform: translateY(0);
+            }
+        }
+
+        /* Additional Styles */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-blocked {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .logout-btn {
+            margin-top: 2rem;
+            width: 100%;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .permission-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+        }
+
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            background: white;
+        }
+
+        .permission-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .permission-name {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .permission-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .permission-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            min-width: 60px;
+        }
+
+        .permission-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .permission-enabled {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .permission-disabled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .success-message {
+            color: var(--success-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Barbershop Admin</h1>
+                <p>Please login to continue</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="userType">Login as:</label>
+                    <select id="userType" class="form-control" required>
+                        <option value="admin">Administrator</option>
+                        <option value="moderator">Moderator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Barbershop</h2>
+                <p>Admin Dashboard</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-page="dashboard">
+                        📊 Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="services">
+                        ✂️ Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="users">
+                        👥 Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="bookings">
+                        📅 Bookings
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-page="settings">
+                        ⚙️ Settings
+                    </a>
+                </li>
+            </ul>
+            <button id="logoutBtn" class="btn btn-danger logout-btn">Logout</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                        <div class="stat-buttons">
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('daily')">Daily</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('weekly')">Weekly</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterStats('monthly')">Monthly</button>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalBookings">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalServices">0</div>
+                        <div class="stat-label">Total Services</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Page -->
+            <div id="servicesPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Services</h1>
+                    <button id="addServiceBtn" class="btn btn-primary" onclick="openServiceModal()">Add Service</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Duration</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="servicesTable">
+                                <!-- Services will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div id="usersPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Users</h1>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Telegram ID</th>
+                                    <th>Bonuses</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Page -->
+            <div id="bookingsPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Bookings</h1>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsTable">
+                                <!-- Bookings will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Settings</h1>
+                </div>
+
+                <!-- Content Settings -->
+                <div class="settings-section">
+                    <h3>Content Management</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Business Name:</label>
+                            <input type="text" id="businessName" class="form-control" value="Elite Barbershop">
+                        </div>
+                        <div class="form-group">
+                            <label>Address:</label>
+                            <input type="text" id="businessAddress" class="form-control" value="123 Main Street, City">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone:</label>
+                            <input type="text" id="businessPhone" class="form-control" value="+1234567890">
+                        </div>
+                        <div class="form-group">
+                            <label>Working Hours:</label>
+                            <input type="text" id="workingHours" class="form-control" value="Mon-Sat: 9AM-8PM">
+                        </div>
+                    </div>
+                    <button id="saveContentBtn" class="btn btn-primary" onclick="saveContentSettings()">Save Content</button>
+                </div>
+
+                <!-- Telegram Bot Settings -->
+                <div class="settings-section">
+                    <h3>Telegram Bot Settings</h3>
+                    <div class="form-group">
+                        <label>Bot Token:</label>
+                        <input type="text" id="botToken" class="form-control" placeholder="Enter your Telegram Bot Token">
+                    </div>
+                    <div class="form-group">
+                        <label>Bot Username:</label>
+                        <input type="text" id="botUsername" class="form-control" placeholder="@your_bot_username" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Bot Status:</label>
+                        <span id="botStatus" class="status-badge status-pending">Not Connected</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="importBotAPI()">Import Bot API</button>
+                        <button class="btn btn-success" onclick="testTelegramBot()">Test Bot</button>
+                        <button class="btn btn-warning" onclick="setupWebhook()">Setup Webhook</button>
+                        <button class="btn btn-danger" onclick="showDeleteConfirmation('bot', null, 'Delete Bot')">Delete Bot</button>
+                    </div>
+                    
+                    <!-- Bot Configuration Panel -->
+                    <div id="botConfigPanel" style="display: none; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <h4>Bot Configuration</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Welcome Message:</label>
+                                <textarea id="welcomeMessage" class="form-control" rows="3" placeholder="Welcome to our barbershop!"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Auto-Reply:</label>
+                                <select id="autoReply" class="form-control">
+                                    <option value="enabled">Enabled</option>
+                                    <option value="disabled">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveBotConfig()">Save Configuration</button>
+                    </div>
+                    
+                    <!-- Bot Activity Log -->
+                    <div id="botActivityLog" style="margin-top: 1rem;">
+                        <h4>Bot Activity Log</h4>
+                        <div id="activityLogContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem;">
+                            <p style="color: var(--text-secondary);">No activity yet...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bonus Settings -->
+                <div class="settings-section">
+                    <h3>Bonus Settings</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bonus per Service:</label>
+                            <input type="number" id="bonusPerService" class="form-control" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label>Bonus Value (%):</label>
+                            <input type="number" id="bonusValue" class="form-control" value="5">
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" onclick="toggleBonusSystem(true)">Enable</button>
+                        <button class="btn btn-danger" onclick="toggleBonusSystem(false)">Disable</button>
+                        <button class="btn btn-primary" onclick="saveBonusSettings()">Save</button>
+                    </div>
+                </div>
+
+                <!-- Moderator Management -->
+                <div class="settings-section">
+                    <h3>Moderator Management</h3>
+                    <button class="btn btn-primary" onclick="openModeratorModal()">Add Moderator</button>
+                    <div id="moderatorsList" class="mt-3">
+                        <!-- Moderators will be listed here -->
+                    </div>
+                </div>
+
+                <!-- Backup Settings -->
+                <div class="settings-section">
+                    <h3>Backup & Data</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="createBackup()">Create Backup</button>
+                        <button class="btn btn-warning" onclick="importBackup()">Import Backup</button>
+                    </div>
+                    <div id="backupsList" class="mt-3">
+                        <h4>Available Backups</h4>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Size</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="backupsTable">
+                                    <!-- Backups will be listed here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Change -->
+                <div class="settings-section">
+                    <h3>Change Password</h3>
+                    <div class="form-group">
+                        <label>New Admin Password:</label>
+                        <input type="password" id="newPassword" class="form-control">
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add/Edit Service</h3>
+                <button class="close-btn" onclick="closeModal('serviceModal')">&times;</button>
+            </div>
+            <form id="serviceForm">
+                <div class="form-group">
+                    <label>Service Name:</label>
+                    <input type="text" id="serviceName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="serviceDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Duration (minutes):</label>
+                        <input type="number" id="serviceDuration" class="form-control" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($):</label>
+                        <input type="number" id="servicePrice" class="form-control" step="0.01" required min="0">
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Save Service</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('serviceModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit User</h3>
+                <button class="close-btn" onclick="closeModal('userModal')">&times;</button>
+            </div>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="userName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="tel" id="userPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Telegram ID:</label>
+                    <input type="text" id="userTelegramId" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Bonuses:</label>
+                    <input type="number" id="userBonuses" class="form-control" value="0" min="0">
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Block User Modal -->
+    <div id="blockUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Block User</h3>
+                <button class="close-btn" onclick="closeModal('blockUserModal')">&times;</button>
+            </div>
+            <form id="blockUserForm">
+                <div class="form-group">
+                    <label>Block Type:</label>
+                    <select id="blockType" class="form-control" required>
+                        <option value="telegram">By Telegram ID</option>
+                        <option value="phone">By Phone Number</option>
+                        <option value="ip">By IP Address</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Block Duration:</label>
+                    <select id="blockDuration" class="form-control" required>
+                        <option value="1">1 Day</option>
+                        <option value="7">1 Week</option>
+                        <option value="30">1 Month</option>
+                        <option value="365">1 Year</option>
+                        <option value="permanent">Permanent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Reason:</label>
+                    <textarea id="blockReason" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-danger">Block User</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('blockUserModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Moderator Modal -->
+    <div id="moderatorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add/Edit Moderator</h3>
+                <button class="close-btn" onclick="closeModal('moderatorModal')">&times;</button>
+            </div>
+            <form id="moderatorForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="moderatorName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="tel" id="moderatorPhone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="moderatorPassword" class="form-control" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Permissions:</label>
+                    <div class="permission-details">
+                        <!-- Bookings Permissions -->
+                        <div class="permission-item">
+                            <div class="permission-name">📅 Bookings Page</div>
+                            <div class="permission-controls">
+                                <span class="permission-label">View:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'view', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'view', false)">Disable</button>
+                                <span class="permission-status permission-enabled" id="bookingsViewStatus">Enabled</span>
+                            </div>
+                        </div>
+                        <div class="permission-item">
+                            <div class="permission-name"></div>
+                            <div class="permission-controls">
+                                <span class="permission-label">Edit:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('bookings', 'edit', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('bookings', 'edit', false)">Disable</button>
+                                <span class="permission-status permission-enabled" id="bookingsEditStatus">Enabled</span>
+                            </div>
+                        </div>
+
+                        <!-- Users Permissions -->
+                        <div class="permission-item">
+                            <div class="permission-name">👥 Users Page</div>
+                            <div class="permission-controls">
+                                <span class="permission-label">View:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'view', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'view', false)">Disable</button>
+                                <span class="permission-status permission-disabled" id="usersViewStatus">Disabled</span>
+                            </div>
+                        </div>
+                        <div class="permission-item">
+                            <div class="permission-name"></div>
+                            <div class="permission-controls">
+                                <span class="permission-label">Edit:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('users', 'edit', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('users', 'edit', false)">Disable</button>
+                                <span class="permission-status permission-disabled" id="usersEditStatus">Disabled</span>
+                            </div>
+                        </div>
+
+                        <!-- Services Permissions -->
+                        <div class="permission-item">
+                            <div class="permission-name">✂️ Services Page</div>
+                            <div class="permission-controls">
+                                <span class="permission-label">View:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'view', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'view', false)">Disable</button>
+                                <span class="permission-status permission-disabled" id="servicesViewStatus">Disabled</span>
+                            </div>
+                        </div>
+                        <div class="permission-item">
+                            <div class="permission-name"></div>
+                            <div class="permission-controls">
+                                <span class="permission-label">Edit:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('services', 'edit', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('services', 'edit', false)">Disable</button>
+                                <span class="permission-status permission-disabled" id="servicesEditStatus">Disabled</span>
+                            </div>
+                        </div>
+
+                        <!-- Settings Permissions -->
+                        <div class="permission-item">
+                            <div class="permission-name">⚙️ Settings Page</div>
+                            <div class="permission-controls">
+                                <span class="permission-label">View Only:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'view', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'view', false)">Disable</button>
+                                <span class="permission-status permission-disabled" id="settingsViewStatus">Disabled</span>
+                            </div>
+                        </div>
+                        <div class="permission-item">
+                            <div class="permission-name"></div>
+                            <div class="permission-controls">
+                                <span class="permission-label">Edit Only:</span>
+                                <button type="button" class="btn btn-xs btn-success" onclick="togglePermission('settings', 'edit', true)">Enable</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="togglePermission('settings', 'edit', false)">Disable</button>
+                                <span class="permission-status permission-disabled" id="settingsEditStatus">Disabled</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-primary">Save Moderator</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('moderatorModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">⚠️</div>
+            <div class="delete-modal-title">Are you sure you want to delete?</div>
+            <div class="delete-modal-buttons">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit Confirmation Modal -->
+    <div id="exitModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">🚪</div>
+            <div class="delete-modal-title">Are you sure you want to exit?</div>
+            <div class="delete-modal-buttons">
+                <button class="btn btn-secondary" onclick="closeExitModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmExit()">Exit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        const ADMIN_PASSWORD = 'R00T$522166!Adm!n#ARIA*DEV';
+        const BOT_TOKEN = '7841202674:AAEm7NL-xgdCWQac1G393ypShtGrDeCyWZA';
+        const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+        let currentUser = null;
+        let currentEditingId = null;
+        let deleteCallback = null;
+        let moderatorPermissions = {
+            bookings: { view: true, edit: true },
+            users: { view: false, edit: false },
+            services: { view: false, edit: false },
+            settings: { view: false, edit: false }
+        };
+
+        // Data Storage
+        class DataManager {
+            constructor() {
+                this.initializeData();
+            }
+
+            initializeData() {
+                if (!localStorage.getItem('barbershop_data')) {
+                    const initialData = {
+                        services: [
+                            { id: 1, name: 'Classic Haircut', description: 'Traditional haircut with styling', duration: 30, price: 25.00 },
+                            { id: 2, name: 'Beard Trim', description: 'Professional beard trimming and shaping', duration: 20, price: 15.00 },
+                            { id: 3, name: 'Hair Wash & Style', description: 'Complete hair wash and styling service', duration: 45, price: 35.00 }
+                        ],
+                        users: [],
+                        bookings: [],
+                        moderators: [],
+                        blockedUsers: [],
+                        settings: {
+                            businessName: 'Elite Barbershop',
+                            businessAddress: '123 Main Street, City',
+                            businessPhone: '+1234567890',
+                            workingHours: 'Mon-Sat: 9AM-8PM',
+                            bonusEnabled: true,
+                            bonusPerService: 10,
+                            bonusValue: 5
+                        }
+                    };
+                    this.saveData(initialData);
+                }
+            }
+
+            getData() {
+                try {
+                    return JSON.parse(localStorage.getItem('barbershop_data'));
+                } catch (error) {
+                    console.error('Error parsing data:', error);
+                    this.initializeData();
+                    return JSON.parse(localStorage.getItem('barbershop_data'));
+                }
+            }
+
+            saveData(data) {
+                try {
+                    localStorage.setItem('barbershop_data', JSON.stringify(data));
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    showNotification('Error saving data!', 'error');
+                }
+            }
+
+            addService(service) {
+                const data = this.getData();
+                service.id = Date.now();
+                data.services.push(service);
+                this.saveData(data);
+                return service;
+            }
+
+            updateService(id, service) {
+                const data = this.getData();
+                const index = data.services.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    data.services[index] = { ...data.services[index], ...service };
+                    this.saveData(data);
+                    return data.services[index];
+                }
+                return null;
+            }
+
+            deleteService(id) {
+                const data = this.getData();
+                data.services = data.services.filter(s => s.id !== id);
+                this.saveData(data);
+            }
+
+            addUser(user) {
+                const data = this.getData();
+                user.id = Date.now();
+                user.bonuses = user.bonuses || 0;
+                user.status = 'active';
+                user.createdAt = new Date().toISOString();
+                data.users.push(user);
+                this.saveData(data);
+                return user;
+            }
+
+            updateUser(id, user) {
+                const data = this.getData();
+                const index = data.users.findIndex(u => u.id === id);
+                if (index !== -1) {
+                    data.users[index] = { ...data.users[index], ...user };
+                    this.saveData(data);
+                    return data.users[index];
+                }
+                return null;
+            }
+
+            deleteUser(id) {
+                const data = this.getData();
+                data.users = data.users.filter(u => u.id !== id);
+                this.saveData(data);
+            }
+
+            addBooking(booking) {
+                const data = this.getData();
+                booking.id = Date.now();
+                booking.status = 'pending';
+                booking.createdAt = new Date().toISOString();
+                data.bookings.push(booking);
+                this.saveData(data);
+                return booking;
+            }
+
+            updateBooking(id, booking) {
+                const data = this.getData();
+                const index = data.bookings.findIndex(b => b.id === id);
+                if (index !== -1) {
+                    data.bookings[index] = { ...data.bookings[index], ...booking };
+                    this.saveData(data);
+                    return data.bookings[index];
+                }
+                return null;
+            }
+
+            blockUser(userId, blockData) {
+                const data = this.getData();
+                const user = data.users.find(u => u.id === userId);
+                if (user) {
+                    user.status = 'blocked';
+                    data.blockedUsers.push({
+                        id: Date.now(),
+                        userId: userId,
+                        ...blockData,
+                        blockedAt: new Date().toISOString()
+                    });
+                    this.saveData(data);
+                }
+            }
+
+            unblockUser(userId) {
+                const data = this.getData();
+                const user = data.users.find(u => u.id === userId);
+                if (user) {
+                    user.status = 'active';
+                    data.blockedUsers = data.blockedUsers.filter(b => b.userId !== userId);
+                    this.saveData(data);
+                }
+            }
+        }
+
+        const dataManager = new DataManager();
+
+        // Permission Management
+        function togglePermission(section, type, enabled) {
+            moderatorPermissions[section][type] = enabled;
+            updatePermissionStatus(section, type, enabled);
+        }
+
+        function updatePermissionStatus(section, type, enabled) {
+            const statusElement = document.getElementById(`${section}${type.charAt(0).toUpperCase() + type.slice(1)}Status`);
+            if (statusElement) {
+                statusElement.textContent = enabled ? 'Enabled' : 'Disabled';
+                statusElement.className = `permission-status ${enabled ? 'permission-enabled' : 'permission-disabled'}`;
+            }
+        }
+
+        function loadPermissionsInModal(permissions) {
+            if (permissions) {
+                moderatorPermissions = { ...permissions };
+                
+                // Update UI for each permission
+                Object.keys(moderatorPermissions).forEach(section => {
+                    Object.keys(moderatorPermissions[section]).forEach(type => {
+                        updatePermissionStatus(section, type, moderatorPermissions[section][type]);
+                    });
+                });
+            } else {
+                // Reset to defaults
+                moderatorPermissions = {
+                    bookings: { view: true, edit: true },
+                    users: { view: false, edit: false },
+                    services: { view: false, edit: false },
+                    settings: { view: false, edit: false }
+                };
+                
+                // Update UI
+                updatePermissionStatus('bookings', 'view', true);
+                updatePermissionStatus('bookings', 'edit', true);
+                updatePermissionStatus('users', 'view', false);
+                updatePermissionStatus('users', 'edit', false);
+                updatePermissionStatus('services', 'view', false);
+                updatePermissionStatus('services', 'edit', false);
+                updatePermissionStatus('settings', 'view', false);
+                updatePermissionStatus('settings', 'edit', false);
+            }
+        }
+
+        // Delete Confirmation Modal Functions
+        function showDeleteConfirmation(type, id, itemName) {
+            deleteCallback = () => {
+                try {
+                    switch(type) {
+                        case 'service':
+                            dataManager.deleteService(id);
+                            loadServices();
+                            loadDashboardData();
+                            showNotification('Service deleted successfully!', 'success');
+                            break;
+                        case 'user':
+                            dataManager.deleteUser(id);
+                            loadUsers();
+                            loadDashboardData();
+                            showNotification('User deleted successfully!', 'success');
+                            break;
+                        case 'moderator':
+                            const data = dataManager.getData();
+                            data.moderators = data.moderators.filter(m => m.id !== id);
+                            dataManager.saveData(data);
+                            loadModerators();
+                            showNotification('Moderator deleted!', 'success');
+                            break;
+                        case 'backup':
+                            let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                            backups = backups.filter(b => b.id !== id);
+                            localStorage.setItem('barbershop_backups', JSON.stringify(backups));
+                            loadBackups();
+                            showNotification('Backup deleted!', 'success');
+                            break;
+                        case 'bot':
+                            deleteBot();
+                            break;
+                    }
+                } catch (error) {
+                    console.error('Error during deletion:', error);
+                    showNotification('Error occurred during deletion!', 'error');
+                }
+            };
+            
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteCallback = null;
+        }
+
+        function confirmDelete() {
+            if (deleteCallback) {
+                deleteCallback();
+                closeDeleteModal();
+            }
+        }
+
+        // Authentication
+        function login() {
+            const userType = document.getElementById('userType').value;
+            const password = document.getElementById('password').value;
+
+            if (!password.trim()) {
+                showNotification('Please enter a password!', 'error');
+                return;
+            }
+
+            if (userType === 'admin' && password === ADMIN_PASSWORD) {
+                currentUser = { type: 'admin', name: 'Administrator' };
+                showDashboard();
+                showNotification('Welcome, Administrator!', 'success');
+            } else if (userType === 'moderator') {
+                const data = dataManager.getData();
+                const moderator = data.moderators.find(m => m.password === password && m.enabled);
+                if (moderator) {
+                    currentUser = { 
+                        type: 'moderator', 
+                        name: moderator.name, 
+                        permissions: moderator.permissions 
+                    };
+                    showDashboard();
+                    showNotification(`Welcome, ${moderator.name}!`, 'success');
+                    
+                    // Apply permission restrictions
+                    applyModeratorPermissions(moderator.permissions);
+                } else {
+                    showNotification('Invalid moderator credentials or account disabled!', 'error');
+                }
+            } else {
+                showNotification('Invalid credentials!', 'error');
+            }
+        }
+
+        function applyModeratorPermissions(permissions) {
+            // Hide/show navigation items based on permissions
+            const navItems = {
+                services: document.querySelector('[data-page="services"]').parentElement,
+                users: document.querySelector('[data-page="users"]').parentElement,
+                bookings: document.querySelector('[data-page="bookings"]').parentElement,
+                settings: document.querySelector('[data-page="settings"]').parentElement
+            };
+
+            Object.keys(permissions).forEach(section => {
+                const hasAnyPermission = permissions[section].view || permissions[section].edit;
+                if (navItems[section]) {
+                    navItems[section].style.display = hasAnyPermission ? 'block' : 'none';
+                }
+            });
+
+            // Store permissions for later use
+            currentUser.detailedPermissions = permissions;
+        }
+
+        function checkPermission(section, type) {
+            if (currentUser.type === 'admin') return true;
+            if (currentUser.type === 'moderator' && currentUser.detailedPermissions) {
+                return currentUser.detailedPermissions[section] && currentUser.detailedPermissions[section][type];
+            }
+            return false;
+        }
+
+        function logout() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        function closeExitModal() {
+            document.getElementById('exitModal').classList.remove('active');
+        }
+
+        function confirmExit() {
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+            document.getElementById('password').value = '';
+            document.getElementById('exitModal').classList.remove('active');
+            
+            // Reset navigation visibility
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.style.display = 'block';
+            });
+            
+            showNotification('You have been logged out successfully', 'success');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            loadDashboardData();
+        }
+
+        // Navigation
+        function showPage(pageId) {
+            // Check permissions for moderators
+            if (currentUser.type === 'moderator' && !checkPermission(pageId, 'view')) {
+                showNotification('You do not have permission to view this page!', 'error');
+                return;
+            }
+
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            document.getElementById(pageId + 'Page').classList.add('active');
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+
+            // Load page-specific data
+            switch(pageId) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'services':
+                    loadServices();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'bookings':
+                    loadBookings();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // Dashboard Data Loading
+        function loadDashboardData() {
+            try {
+                const data = dataManager.getData();
+                document.getElementById('totalUsers').textContent = data.users.length;
+                document.getElementById('totalBookings').textContent = data.bookings.length;
+                document.getElementById('totalServices').textContent = data.services.length;
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showNotification('Error loading dashboard data!', 'error');
+            }
+        }
+
+        function filterStats(period) {
+            showNotification(`Filtered stats by ${period}`, 'success');
+        }
+
+        // Services Management
+        function loadServices() {
+            try {
+                const data = dataManager.getData();
+                const tbody = document.getElementById('servicesTable');
+                tbody.innerHTML = '';
+
+                // Check edit permissions for moderators
+                const canEdit = checkPermission('services', 'edit');
+                
+                // Hide/show add button based on permissions
+                const addBtn = document.getElementById('addServiceBtn');
+                if (addBtn) {
+                    addBtn.style.display = canEdit ? 'block' : 'none';
+                }
+
+                data.services.forEach(service => {
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editService(${service.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('service', ${service.id}, '${service.name}')">Delete</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
+
+                    row.innerHTML = `
+                        <td>${service.name}</td>
+                        <td>${service.description}</td>
+                        <td>${service.duration} min</td>
+                        <td>$${service.price.toFixed(2)}</td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading services:', error);
+                showNotification('Error loading services!', 'error');
+            }
+        }
+
+        function openServiceModal(serviceId = null) {
+            if (!checkPermission('services', 'edit')) {
+                showNotification('You do not have permission to edit services!', 'error');
+                return;
+            }
+
+            currentEditingId = serviceId;
+            const modal = document.getElementById('serviceModal');
+            const title = document.querySelector('#serviceModal .modal-title');
+            
+            if (serviceId) {
+                const data = dataManager.getData();
+                const service = data.services.find(s => s.id === serviceId);
+                if (service) {
+                    document.getElementById('serviceName').value = service.name;
+                    document.getElementById('serviceDescription').value = service.description;
+                    document.getElementById('serviceDuration').value = service.duration;
+                    document.getElementById('servicePrice').value = service.price;
+                    title.textContent = 'Edit Service';
+                }
+            } else {
+                document.getElementById('serviceForm').reset();
+                title.textContent = 'Add Service';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function editService(id) {
+            openServiceModal(id);
+        }
+
+        // Users Management
+        function loadUsers() {
+            try {
+                const data = dataManager.getData();
+                const tbody = document.getElementById('usersTable');
+                tbody.innerHTML = '';
+
+                const canEdit = checkPermission('users', 'edit');
+
+                data.users.forEach(user => {
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('user', ${user.id}, '${user.name}')">Delete</button>
+                            <button class="btn btn-sm btn-warning" onclick="blockUser(${user.id})">Block</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
+
+                    row.innerHTML = `
+                        <td>${user.name}</td>
+                        <td>${user.phone}</td>
+                        <td>${user.telegramId || 'N/A'}</td>
+                        <td>${user.bonuses || 0}</td>
+                        <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showNotification('Error loading users!', 'error');
+            }
+        }
+
+        function editUser(id) {
+            if (!checkPermission('users', 'edit')) {
+                showNotification('You do not have permission to edit users!', 'error');
+                return;
+            }
+
+            const data = dataManager.getData();
+            const user = data.users.find(u => u.id === id);
+            if (user) {
+                currentEditingId = id;
+                document.getElementById('userName').value = user.name;
+                document.getElementById('userPhone').value = user.phone;
+                document.getElementById('userTelegramId').value = user.telegramId || '';
+                document.getElementById('userBonuses').value = user.bonuses || 0;
+                document.getElementById('userModal').classList.add('active');
+            }
+        }
+
+        function blockUser(id) {
+            if (!checkPermission('users', 'edit')) {
+                showNotification('You do not have permission to block users!', 'error');
+                return;
+            }
+
+            currentEditingId = id;
+            document.getElementById('blockUserModal').classList.add('active');
+        }
+
+        // Bookings Management
+        function loadBookings() {
+            try {
+                const data = dataManager.getData();
+                const tbody = document.getElementById('bookingsTable');
+                tbody.innerHTML = '';
+
+                const canEdit = checkPermission('bookings', 'edit');
+
+                data.bookings.forEach(booking => {
+                    const user = data.users.find(u => u.id === booking.userId);
+                    const service = data.services.find(s => s.id === booking.serviceId);
+                    
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-success" onclick="acceptBooking(${booking.id})">Accept</button>
+                            <button class="btn btn-sm btn-danger" onclick="declineBooking(${booking.id})">Decline</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
+
+                    row.innerHTML = `
+                        <td>${user ? user.name : 'Unknown'}</td>
+                        <td>${service ? service.name : 'Unknown'}</td>
+                        <td>${booking.date || 'N/A'}</td>
+                        <td>${booking.time || 'N/A'}</td>
+                        <td><span class="status-badge status-${booking.status}">${booking.status}</span></td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                showNotification('Error loading bookings!', 'error');
+            }
+        }
+
+        function acceptBooking(id) {
+            if (!checkPermission('bookings', 'edit')) {
+                showNotification('You do not have permission to modify bookings!', 'error');
+                return;
+            }
+
+            dataManager.updateBooking(id, { status: 'confirmed' });
+            loadBookings();
+            showNotification('Booking accepted!', 'success');
+            
+            // Send confirmation to user via Telegram
+            const data = dataManager.getData();
+            const booking = data.bookings.find(b => b.id === id);
+            if (booking) {
+                const user = data.users.find(u => u.id === booking.userId);
+                if (user && user.telegramId) {
+                    sendTelegramMessage(user.telegramId, '✅ Your booking is confirmed!');
+                }
+            }
+        }
+
+        function declineBooking(id) {
+            if (!checkPermission('bookings', 'edit')) {
+                showNotification('You do not have permission to modify bookings!', 'error');
+                return;
+            }
+
+            dataManager.updateBooking(id, { status: 'declined' });
+            loadBookings();
+            showNotification('Booking declined!', 'warning');
+        }
+
+        // Settings Management
+        function loadSettings() {
+            try {
+                const data = dataManager.getData();
+                const settings = data.settings;
+                
+                document.getElementById('businessName').value = settings.businessName;
+                document.getElementById('businessAddress').value = settings.businessAddress;
+                document.getElementById('businessPhone').value = settings.businessPhone;
+                document.getElementById('workingHours').value = settings.workingHours;
+                document.getElementById('bonusPerService').value = settings.bonusPerService;
+                document.getElementById('bonusValue').value = settings.bonusValue;
+                
+                // Apply permissions to settings page
+                const canEdit = checkPermission('settings', 'edit');
+                
+                // Disable/enable form controls based on permissions
+                const formControls = document.querySelectorAll('#settingsPage input, #settingsPage textarea, #settingsPage select, #settingsPage button');
+                formControls.forEach(control => {
+                    if (!canEdit && !control.classList.contains('btn-secondary')) {
+                        control.disabled = true;
+                    }
+                });
+
+                // Hide/show save buttons
+                const saveButtons = document.querySelectorAll('#settingsPage .btn-primary, #settingsPage .btn-success, #settingsPage .btn-danger, #settingsPage .btn-warning');
+                saveButtons.forEach(btn => {
+                    if (!btn.textContent.includes('Download')) {
+                        btn.style.display = canEdit ? 'inline-flex' : 'none';
+                    }
+                });
+                
+                loadModerators();
+                loadBackups();
+                loadBotConfiguration();
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showNotification('Error loading settings!', 'error');
+            }
+        }
+
+        function saveContentSettings() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to edit settings!', 'error');
+                return;
+            }
+
+            try {
+                const data = dataManager.getData();
+                data.settings.businessName = document.getElementById('businessName').value;
+                data.settings.businessAddress = document.getElementById('businessAddress').value;
+                data.settings.businessPhone = document.getElementById('businessPhone').value;
+                data.settings.workingHours = document.getElementById('workingHours').value;
+                dataManager.saveData(data);
+                showNotification('Content settings saved!', 'success');
+            } catch (error) {
+                console.error('Error saving content settings:', error);
+                showNotification('Error saving content settings!', 'error');
+            }
+        }
+
+        function saveBonusSettings() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to edit settings!', 'error');
+                return;
+            }
+
+            try {
+                const data = dataManager.getData();
+                data.settings.bonusPerService = parseInt(document.getElementById('bonusPerService').value) || 0;
+                data.settings.bonusValue = parseInt(document.getElementById('bonusValue').value) || 0;
+                dataManager.saveData(data);
+                showNotification('Bonus settings saved!', 'success');
+            } catch (error) {
+                console.error('Error saving bonus settings:', error);
+                showNotification('Error saving bonus settings!', 'error');
+            }
+        }
+
+        function toggleBonusSystem(enabled) {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to edit settings!', 'error');
+                return;
+            }
+
+            try {
+                const data = dataManager.getData();
+                data.settings.bonusEnabled = enabled;
+                dataManager.saveData(data);
+                showNotification(`Bonus system ${enabled ? 'enabled' : 'disabled'}!`, 'success');
+            } catch (error) {
+                console.error('Error toggling bonus system:', error);
+                showNotification('Error updating bonus system!', 'error');
+            }
+        }
+
+        function loadModerators() {
+            try {
+                const data = dataManager.getData();
+                const container = document.getElementById('moderatorsList');
+                container.innerHTML = '';
+                
+                const canEdit = checkPermission('settings', 'edit');
+                
+                data.moderators.forEach(moderator => {
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    
+                    // Create permissions summary
+                    let permissionsSummary = '';
+                    if (moderator.permissions) {
+                        const sections = Object.keys(moderator.permissions);
+                        sections.forEach(section => {
+                            const perms = moderator.permissions[section];
+                            if (perms.view || perms.edit) {
+                                const permTypes = [];
+                                if (perms.view) permTypes.push('View');
+                                if (perms.edit) permTypes.push('Edit');
+                                permissionsSummary += `<br><small>${section.charAt(0).toUpperCase() + section.slice(1)}: ${permTypes.join(', ')}</small>`;
+                            }
+                        });
+                    }
+
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="editModerator(${moderator.id})">Edit</button>
+                            <button class="btn btn-sm btn-${moderator.enabled ? 'warning' : 'success'}" onclick="toggleModerator(${moderator.id})">
+                                ${moderator.enabled ? 'Disable' : 'Enable'}
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('moderator', ${moderator.id}, '${moderator.name}')">Delete</button>
+                        </div>
+                    ` : '<span class="text-secondary">View Only</span>';
+
+                    div.innerHTML = `
+                        <h4>${moderator.name}</h4>
+                        <p>Phone: ${moderator.phone}</p>
+                        <p>Status: <span class="status-badge status-${moderator.enabled ? 'active' : 'blocked'}">${moderator.enabled ? 'Active' : 'Disabled'}</span></p>
+                        <p>Permissions: ${permissionsSummary || '<small>No permissions assigned</small>'}</p>
+                        ${actionsHtml}
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error('Error loading moderators:', error);
+                showNotification('Error loading moderators!', 'error');
+            }
+        }
+
+        function openModeratorModal(moderatorId = null) {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to manage moderators!', 'error');
+                return;
+            }
+
+            currentEditingId = moderatorId;
+            const modal = document.getElementById('moderatorModal');
+            const title = document.querySelector('#moderatorModal .modal-title');
+            
+            if (moderatorId) {
+                const data = dataManager.getData();
+                const moderator = data.moderators.find(m => m.id === moderatorId);
+                if (moderator) {
+                    document.getElementById('moderatorName').value = moderator.name;
+                    document.getElementById('moderatorPhone').value = moderator.phone;
+                    document.getElementById('moderatorPassword').value = moderator.password;
+                    loadPermissionsInModal(moderator.permissions);
+                    title.textContent = 'Edit Moderator';
+                }
+            } else {
+                document.getElementById('moderatorForm').reset();
+                loadPermissionsInModal(null);
+                title.textContent = 'Add Moderator';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function editModerator(id) {
+            openModeratorModal(id);
+        }
+
+        function toggleModerator(id) {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to manage moderators!', 'error');
+                return;
+            }
+
+            try {
+                const data = dataManager.getData();
+                const moderator = data.moderators.find(m => m.id === id);
+                if (moderator) {
+                    moderator.enabled = !moderator.enabled;
+                    dataManager.saveData(data);
+                    loadModerators();
+                    showNotification(`Moderator ${moderator.enabled ? 'enabled' : 'disabled'}!`, 'success');
+                }
+            } catch (error) {
+                console.error('Error toggling moderator:', error);
+                showNotification('Error updating moderator status!', 'error');
+            }
+        }
+
+        function createBackup() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to create backups!', 'error');
+                return;
+            }
+
+            try {
+                const data = dataManager.getData();
+                const backupDate = new Date();
+                const backup = {
+                    ...data,
+                    backupDate: backupDate.toISOString()
+                };
+                
+                // Get existing backups or initialize
+                let backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                
+                // Create backup entry
+                const backupEntry = {
+                    id: Date.now(),
+                    name: `Backup_${backupDate.toISOString().split('T')[0]}_${backupDate.getHours()}${backupDate.getMinutes()}`,
+                    date: backupDate.toLocaleDateString(),
+                    time: backupDate.toLocaleTimeString(),
+                    size: JSON.stringify(backup).length,
+                    data: backup
+                };
+                
+                // Add to backups list
+                backups.push(backupEntry);
+                localStorage.setItem('barbershop_backups', JSON.stringify(backups));
+                
+                // Update UI
+                loadBackups();
+                showNotification('Backup created successfully!', 'success');
+            } catch (error) {
+                console.error('Error creating backup:', error);
+                showNotification('Error creating backup!', 'error');
+            }
+        }
+
+        function downloadBackup(backupId) {
+            try {
+                const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                const backup = backups.find(b => b.id === backupId);
+                
+                if (backup) {
+                    const blob = new Blob([JSON.stringify(backup.data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${backup.name}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showNotification('Backup downloaded!', 'success');
+                } else {
+                    showNotification('Backup not found!', 'error');
+                }
+            } catch (error) {
+                console.error('Error downloading backup:', error);
+                showNotification('Error downloading backup!', 'error');
+            }
+        }
+
+        function importBackup() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to import backups!', 'error');
+                return;
+            }
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const backup = JSON.parse(e.target.result);
+                            
+                            // Validate backup structure
+                            if (!backup.services || !backup.users || !backup.settings) {
+                                throw new Error('Invalid backup format');
+                            }
+                            
+                            dataManager.saveData(backup);
+                            showNotification('Backup imported successfully!', 'success');
+                            loadDashboardData();
+                            
+                            // Refresh current page
+                            const currentPage = document.querySelector('.nav-link.active').getAttribute('data-page');
+                            showPage(currentPage);
+                        } catch (error) {
+                            console.error('Error importing backup:', error);
+                            showNotification('Invalid backup file!', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function loadBackups() {
+            try {
+                const backups = JSON.parse(localStorage.getItem('barbershop_backups') || '[]');
+                const tbody = document.getElementById('backupsTable');
+                tbody.innerHTML = '';
+                
+                const canEdit = checkPermission('settings', 'edit');
+                
+                backups.forEach(backup => {
+                    const row = document.createElement('tr');
+                    const actionsHtml = canEdit ? `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
+                            <button class="btn btn-sm btn-danger" onclick="showDeleteConfirmation('backup', ${backup.id}, '${backup.name}')">Delete</button>
+                        </div>
+                    ` : `
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="downloadBackup(${backup.id})">Download</button>
+                        </div>
+                    `;
+
+                    row.innerHTML = `
+                        <td>${backup.name}</td>
+                        <td>${backup.date}</td>
+                        <td>${backup.time}</td>
+                        <td>${formatFileSize(backup.size)}</td>
+                        <td>${actionsHtml}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading backups:', error);
+                showNotification('Error loading backups!', 'error');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
+        }
+
+        function changePassword() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to change passwords!', 'error');
+                return;
+            }
+
+            const newPassword = document.getElementById('newPassword').value;
+            if (newPassword.length < 8) {
+                showNotification('Password must be at least 8 characters!', 'error');
+                return;
+            }
+            // In a real application, you would update the password in a secure way
+            showNotification('Password changed successfully!', 'success');
+            document.getElementById('newPassword').value = '';
+        }
+
+        // Telegram Bot Functions
+        async function sendTelegramMessage(chatId, message, keyboard = null) {
+            try {
+                const payload = {
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: 'HTML'
+                };
+                
+                if (keyboard) {
+                    payload.reply_markup = JSON.stringify({
+                        inline_keyboard: keyboard
+                    });
+                }
+                
+                const response = await fetch(`${BOT_API_URL}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                if (!result.ok) {
+                    throw new Error(result.description || 'Failed to send message');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('Error sending Telegram message:', error);
+                logBotActivity(`Error sending message: ${error.message}`);
+                return null;
+            }
+        }
+
+        // Enhanced Telegram Bot Management
+        let botConnected = false;
+        let botInfo = null;
+
+        async function importBotAPI() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to manage bot settings!', 'error');
+                return;
+            }
+
+            const token = document.getElementById('botToken').value.trim();
+            
+            if (!token) {
+                showNotification('Please enter a bot token!', 'error');
+                return;
+            }
+            
+            // Validate token format
+            if (!token.match(/^\d+:[A-Za-z0-9_-]+$/)) {
+                showNotification('Invalid bot token format!', 'error');
+                return;
+            }
+            
+            try {
+                // Show loading state
+                const importBtn = document.querySelector('button[onclick="importBotAPI()"]');
+                const originalText = importBtn.textContent;
+                importBtn.textContent = 'Connecting...';
+                importBtn.disabled = true;
+                
+                // Test the bot token
+                const response = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    botInfo = data.result;
+                    botConnected = true;
+                    
+                    // Update UI
+                    document.getElementById('botUsername').value = `@${botInfo.username}`;
+                    document.getElementById('botStatus').textContent = 'Connected';
+                    document.getElementById('botStatus').className = 'status-badge status-active';
+                    document.getElementById('botConfigPanel').style.display = 'block';
+                    
+                    // Save bot configuration
+                    const botConfig = {
+                        token: token,
+                        username: botInfo.username,
+                        firstName: botInfo.first_name,
+                        connected: true,
+                        connectedAt: new Date().toISOString()
+                    };
+                    
+                    localStorage.setItem('telegram_bot_config', JSON.stringify(botConfig));
+                    
+                    // Initialize bot commands
+                    await setupBotCommands(token);
+                    
+                    // Start polling for updates (simulation)
+                    startBotPolling(token);
+                    
+                    showNotification(`Bot "${botInfo.first_name}" connected successfully!`, 'success');
+                    logBotActivity(`Bot connected: ${botInfo.first_name} (@${botInfo.username})`);
+                    
+                } else {
+                    showNotification(`Bot API Error: ${data.description}`, 'error');
+                    logBotActivity(`Connection failed: ${data.description}`);
+                }
+                
+                // Reset button state
+                importBtn.textContent = originalText;
+                importBtn.disabled = false;
+                
+            } catch (error) {
+                showNotification('Failed to connect to Telegram API!', 'error');
+                logBotActivity(`Connection error: ${error.message}`);
+                console.error('Bot connection error:', error);
+                
+                // Reset button state
+                const importBtn = document.querySelector('button[onclick="importBotAPI()"]');
+                importBtn.textContent = 'Import Bot API';
+                importBtn.disabled = false;
+            }
+        }
+
+        async function setupBotCommands(token) {
+            const commands = [
+                { command: 'start', description: 'Start the bot and see main menu' },
+                { command: 'services', description: 'View available services' },
+                { command: 'book', description: 'Book an appointment' },
+                { command: 'help', description: 'Get help and contact information' }
+            ];
+            
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${token}/setMyCommands`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ commands })
+                });
+                
+                const data = await response.json();
+                if (data.ok) {
+                    logBotActivity('Bot commands configured successfully');
+                } else {
+                    logBotActivity(`Failed to set commands: ${data.description}`);
+                }
+            } catch (error) {
+                console.error('Error setting up bot commands:', error);
+                logBotActivity(`Error setting commands: ${error.message}`);
+            }
+        }
+
+        function startBotPolling(token) {
+            // Simulate bot polling for demonstration
+            logBotActivity('Bot polling started - ready to receive messages');
+            
+            // Simulate some bot activity for demonstration
+            setTimeout(() => {
+                logBotActivity('Bot is active and monitoring for new messages');
+            }, 2000);
+        }
+
+        function saveBotConfig() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to manage bot settings!', 'error');
+                return;
+            }
+
+            try {
+                const config = {
+                    welcomeMessage: document.getElementById('welcomeMessage').value,
+                    autoReply: document.getElementById('autoReply').value
+                };
+                
+                // Get existing bot config
+                const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
+                botConfig.settings = config;
+                
+                localStorage.setItem('telegram_bot_config', JSON.stringify(botConfig));
+                showNotification('Bot configuration saved!', 'success');
+                logBotActivity('Bot configuration updated');
+            } catch (error) {
+                console.error('Error saving bot config:', error);
+                showNotification('Error saving bot configuration!', 'error');
+            }
+        }
+
+        function logBotActivity(message) {
+            try {
+                const container = document.getElementById('activityLogContainer');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                // Create new log entry
+                const logEntry = document.createElement('div');
+                logEntry.style.marginBottom = '0.5rem';
+                logEntry.style.padding = '0.5rem';
+                logEntry.style.backgroundColor = 'var(--background-color)';
+                logEntry.style.borderRadius = '0.25rem';
+                logEntry.innerHTML = `<small style="color: var(--text-secondary);">[${timestamp}]</small> ${message}`;
+                
+                // Remove "No activity" message if it exists
+                if (container.children.length === 1 && container.children[0].tagName === 'P') {
+                    container.innerHTML = '';
+                }
+                
+                // Add new entry at the top
+                container.insertBefore(logEntry, container.firstChild);
+                
+                // Keep only last 10 entries
+                while (container.children.length > 10) {
+                    container.removeChild(container.lastChild);
+                }
+            } catch (error) {
+                console.error('Error logging bot activity:', error);
+            }
+        }
+
+        // Enhanced test function
+        async function testTelegramBot() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to test bot!', 'error');
+                return;
+            }
+
+            const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
+            
+            if (!botConfig.token) {
+                showNotification('Please import bot API first!', 'error');
+                return;
+            }
+            
+            try {
+                const testBtn = document.querySelector('button[onclick="testTelegramBot()"]');
+                const originalText = testBtn.textContent;
+                testBtn.textContent = 'Testing...';
+                testBtn.disabled = true;
+                
+                const response = await fetch(`https://api.telegram.org/bot${botConfig.token}/getMe`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    showNotification(`Bot test successful! Bot: ${data.result.first_name}`, 'success');
+                    logBotActivity(`Bot test completed successfully`);
+                } else {
+                    showNotification('Bot test failed!', 'error');
+                    logBotActivity(`Bot test failed: ${data.description}`);
+                }
+                
+                testBtn.textContent = originalText;
+                testBtn.disabled = false;
+                
+            } catch (error) {
+                showNotification('Error testing bot!', 'error');
+                logBotActivity(`Bot test error: ${error.message}`);
+                
+                const testBtn = document.querySelector('button[onclick="testTelegramBot()"]');
+                testBtn.textContent = 'Test Bot';
+                testBtn.disabled = false;
+            }
+        }
+
+        // Enhanced webhook setup
+        async function setupWebhook() {
+            if (!checkPermission('settings', 'edit')) {
+                showNotification('You do not have permission to setup webhook!', 'error');
+                return;
+            }
+
+            const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
+            
+            if (!botConfig.token) {
+                showNotification('Please import bot API first!', 'error');
+                return;
+            }
+            
+            // In a real application, you would configure the actual webhook URL
+            const webhookUrl = prompt('Enter your webhook URL (leave empty for polling mode):');
+            
+            if (webhookUrl !== null) {
+                try {
+                    const webhookBtn = document.querySelector('button[onclick="setupWebhook()"]');
+                    const originalText = webhookBtn.textContent;
+                    webhookBtn.textContent = 'Setting up...';
+                    webhookBtn.disabled = true;
+                    
+                    const response = await fetch(`https://api.telegram.org/bot${botConfig.token}/setWebhook`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ url: webhookUrl })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.ok) {
+                        if (webhookUrl) {
+                            showNotification('Webhook configured successfully!', 'success');
+                            logBotActivity(`Webhook set to: ${webhookUrl}`);
+                        } else {
+                            showNotification('Webhook removed - using polling mode', 'success');
+                            logBotActivity('Webhook removed - using polling mode');
+                        }
+                    } else {
+                        showNotification(`Webhook error: ${data.description}`, 'error');
+                        logBotActivity(`Webhook error: ${data.description}`);
+                    }
+                    
+                    webhookBtn.textContent = originalText;
+                    webhookBtn.disabled = false;
+                    
+                } catch (error) {
+                    showNotification('Error setting up webhook!', 'error');
+                    logBotActivity(`Webhook setup error: ${error.message}`);
+                    
+                    const webhookBtn = document.querySelector('button[onclick="setupWebhook()"]');
+                    webhookBtn.textContent = 'Setup Webhook';
+                    webhookBtn.disabled = false;
+                }
+            }
+        }
+
+        // Enhanced delete function
+        async function deleteBot() {
+            const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
+            
+            if (botConfig.token) {
+                try {
+                    // Remove webhook
+                    await fetch(`https://api.telegram.org/bot${botConfig.token}/deleteWebhook`);
+                    logBotActivity('Bot disconnected and webhook removed');
+                } catch (error) {
+                    console.error('Error removing webhook:', error);
+                    logBotActivity(`Error removing webhook: ${error.message}`);
+                }
+            }
+            
+            // Clear bot configuration
+            localStorage.removeItem('telegram_bot_config');
+            
+            // Reset UI
+            document.getElementById('botToken').value = '';
+            document.getElementById('botUsername').value = '';
+            document.getElementById('botStatus').textContent = 'Not Connected';
+            document.getElementById('botStatus').className = 'status-badge status-pending';
+            document.getElementById('botConfigPanel').style.display = 'none';
+            document.getElementById('activityLogContainer').innerHTML = '<p style="color: var(--text-secondary);">No activity yet...</p>';
+            
+            botConnected = false;
+            botInfo = null;
+            
+            showNotification('Bot disconnected successfully!', 'success');
+        }
+
+        // Load bot configuration on page load
+        function loadBotConfiguration() {
+            try {
+                const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
+                
+                if (botConfig.connected && botConfig.token) {
+                    document.getElementById('botToken').value = botConfig.token;
+                    document.getElementById('botUsername').value = `@${botConfig.username}`;
+                    document.getElementById('botStatus').textContent = 'Connected';
+                    document.getElementById('botStatus').className = 'status-badge status-active';
+                    document.getElementById('botConfigPanel').style.display = 'block';
+                    
+                    if (botConfig.settings) {
+                        document.getElementById('welcomeMessage').value = botConfig.settings.welcomeMessage || '';
+                        document.getElementById('autoReply').value = botConfig.settings.autoReply || 'enabled';
+                    }
+                    
+                    botConnected = true;
+                    logBotActivity(`Bot session restored: ${botConfig.firstName} (@${botConfig.username})`);
+                }
+            } catch (error) {
+                console.error('Error loading bot configuration:', error);
+            }
+        }
+
+        // Form Handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                login();
+            });
+
+            // Service form
+            document.getElementById('serviceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('serviceName').value.trim();
+                const description = document.getElementById('serviceDescription').value.trim();
+                const duration = parseInt(document.getElementById('serviceDuration').value);
+                const price = parseFloat(document.getElementById('servicePrice').value);
+                
+                if (!name || duration <= 0 || price < 0) {
+                    showNotification('Please fill in all required fields correctly!', 'error');
+                    return;
+                }
+                
+                const service = { name, description, duration, price };
+                
+                try {
+                    if (currentEditingId) {
+                        dataManager.updateService(currentEditingId, service);
+                        showNotification('Service updated successfully!', 'success');
+                    } else {
+                        dataManager.addService(service);
+                        showNotification('Service added successfully!', 'success');
+                    }
+                    
+                    closeModal('serviceModal');
+                    loadServices();
+                    loadDashboardData();
+                } catch (error) {
+                    console.error('Error saving service:', error);
+                    showNotification('Error saving service!', 'error');
+                }
+            });
+
+            // User form
+            document.getElementById('userForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('userName').value.trim();
+                const phone = document.getElementById('userPhone').value.trim();
+                const telegramId = document.getElementById('userTelegramId').value.trim();
+                const bonuses = parseInt(document.getElementById('userBonuses').value) || 0;
+                
+                if (!name || !phone) {
+                    showNotification('Please fill in all required fields!', 'error');
+                    return;
+                }
+                
+                const user = { name, phone, telegramId, bonuses };
+                
+                try {
+                    if (currentEditingId) {
+                        dataManager.updateUser(currentEditingId, user);
+                        showNotification('User updated successfully!', 'success');
+                    } else {
+                        dataManager.addUser(user);
+                        showNotification('User added successfully!', 'success');
+                    }
+                    
+                    closeModal('userModal');
+                    loadUsers();
+                    loadDashboardData();
+                } catch (error) {
+                    console.error('Error saving user:', error);
+                    showNotification('Error saving user!', 'error');
+                }
+            });
+
+            // Block user form
+            document.getElementById('blockUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const blockData = {
+                    type: document.getElementById('blockType').value,
+                    duration: document.getElementById('blockDuration').value,
+                    reason: document.getElementById('blockReason').value.trim()
+                };
+                
+                try {
+                    dataManager.blockUser(currentEditingId, blockData);
+                    closeModal('blockUserModal');
+                    loadUsers();
+                    showNotification('User blocked successfully!', 'success');
+                } catch (error) {
+                    console.error('Error blocking user:', error);
+                    showNotification('Error blocking user!', 'error');
+                }
+            });
+
+            // Moderator form
+            document.getElementById('moderatorForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('moderatorName').value.trim();
+                const phone = document.getElementById('moderatorPhone').value.trim();
+                const password = document.getElementById('moderatorPassword').value;
+                
+                if (!name || !phone || !password) {
+                    showNotification('Please fill in all required fields!', 'error');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showNotification('Password must be at least 6 characters!', 'error');
+                    return;
+                }
+                
+                const moderator = {
+                    id: currentEditingId || Date.now(),
+                    name,
+                    phone,
+                    password,
+                    permissions: { ...moderatorPermissions },
+                    enabled: true,
+                    createdAt: new Date().toISOString()
+                };
+                
+                try {
+                    const data = dataManager.getData();
+                    
+                    if (currentEditingId) {
+                        // Update existing moderator
+                        const index = data.moderators.findIndex(m => m.id === currentEditingId);
+                        if (index !== -1) {
+                            data.moderators[index] = { ...data.moderators[index], ...moderator };
+                            showNotification('Moderator updated successfully!', 'success');
+                        }
+                    } else {
+                        // Add new moderator
+                        data.moderators.push(moderator);
+                        showNotification('Moderator added successfully!', 'success');
+                    }
+                    
+                    dataManager.saveData(data);
+                    closeModal('moderatorModal');
+                    loadModerators();
+                } catch (error) {
+                    console.error('Error saving moderator:', error);
+                    showNotification('Error saving moderator!', 'error');
+                }
+            });
+
+            // Navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                });
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+
+            // Modal close buttons
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.classList.remove('active');
+                });
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+
+            // Close delete modal when clicking outside
+            document.getElementById('deleteModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeDeleteModal();
+                }
+            });
+
+            // Close exit modal when clicking outside
+            document.getElementById('exitModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeExitModal();
+                }
+            });
+
+            // Initialize the application
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').classList.remove('active');
+        });
+
+        // Utility Functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            currentEditingId = null;
+        }
+
+        function showNotification(message, type = 'success') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            });
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Error handling for uncaught errors
+        window.addEventListener('error', function(e) {
+            console.error('Uncaught error:', e.error);
+            showNotification('An unexpected error occurred!', 'error');
+        });
+
+        // Handle unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('Unhandled promise rejection:', e.reason);
+            showNotification('An unexpected error occurred!', 'error');
+        });
+    </script>
+</body>
+</html>
