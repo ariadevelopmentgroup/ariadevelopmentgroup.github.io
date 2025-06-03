@@ -2373,29 +2373,29 @@
                 
                 const data = await response.json();
                 if (data.ok) {
-                    logBotActivity('Bot commands configured successfully');
+                    logBotActivity('Բոտի հրամանները հաջողությամբ կարգավորվեցին');
                 } else {
-                    logBotActivity(`Failed to set commands: ${data.description}`);
+                    logBotActivity(`Հրամանները չհաջողվեց կարգավորել ${data.description}`);
                 }
             } catch (error) {
-                console.error('Error setting up bot commands:', error);
-                logBotActivity(`Error setting commands: ${error.message}`);
+                console.error('Սխալ՝ բոտի հրամանները կարգավորելիս', error);
+                logBotActivity(`Հրամանների կարգավորման սխալ ${error.message}`);
             }
         }
 
         function startBotPolling(token) {
             // Simulate bot polling for demonstration
-            logBotActivity('Bot polling started - ready to receive messages');
+            logBotActivity('Բոտի հարցումը սկսվել է, պատրաստ է հաղորդագրություններ ստանալու');
             
             // Simulate some bot activity for demonstration
             setTimeout(() => {
-                logBotActivity('Bot is active and monitoring for new messages');
+                logBotActivity('Բոտը ակտիվ է և հետևում է նոր հաղորդագրությունների առկայությանը');
             }, 2000);
         }
 
         function saveBotConfig() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to manage bot settings!', 'error');
+                showNotification('Դուք չունեք բոտի կարգավորումները կառավարելու թույլտվություն։', 'error');
                 return;
             }
 
@@ -2410,11 +2410,11 @@
                 botConfig.settings = config;
                 
                 localStorage.setItem('telegram_bot_config', JSON.stringify(botConfig));
-                showNotification('Bot configuration saved!', 'success');
-                logBotActivity('Bot configuration updated');
+                showNotification('Բոտի կարգավորումը պահպանված է։', 'success');
+                logBotActivity('Բոտի կարգավորումները թարմացվեցին');
             } catch (error) {
-                console.error('Error saving bot config:', error);
-                showNotification('Error saving bot configuration!', 'error');
+                console.error('Սխալ, բոտի կարգավորումները պահպանելիս', error);
+                showNotification('Սխալ առաջացավ բոտի կարգավորումները պահպանելիս։', 'error');
             }
         }
 
@@ -2444,28 +2444,28 @@
                     container.removeChild(container.lastChild);
                 }
             } catch (error) {
-                console.error('Error logging bot activity:', error);
+                console.error('Սխալ է գրանցվել բոտի ակտիվության գրանցման ժամանակ', error);
             }
         }
 
         // Enhanced test function
         async function testTelegramBot() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to test bot!', 'error');
+                showNotification('Դուք չունեք բոտը փորձարկելու թույլտվություն։', 'error');
                 return;
             }
 
             const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
             
             if (!botConfig.token) {
-                showNotification('Please import bot API first!', 'error');
+                showNotification('Խնդրում ենք նախ ներմուծել Bot-ի API-ն։, 'error');
                 return;
             }
             
             try {
                 const testBtn = document.querySelector('button[onclick="testTelegramBot()"]');
                 const originalText = testBtn.textContent;
-                testBtn.textContent = 'Testing...';
+                testBtn.textContent = 'Փորձարկում...';
                 testBtn.disabled = true;
                 
                 const response = await fetch(`https://api.telegram.org/bot${botConfig.token}/getMe`);
@@ -2473,18 +2473,18 @@
                 
                 if (data.ok) {
                     showNotification(`Bot test successful! Bot: ${data.result.first_name}`, 'success');
-                    logBotActivity(`Bot test completed successfully`);
+                    logBotActivity(`Բոտի թեստը հաջողությամբ ավարտվեց`);
                 } else {
                     showNotification('Bot test failed!', 'error');
-                    logBotActivity(`Bot test failed: ${data.description}`);
+                    logBotActivity(`Բոտի փորձարկումը ձախողվեց ${data.description}`);
                 }
                 
                 testBtn.textContent = originalText;
                 testBtn.disabled = false;
                 
             } catch (error) {
-                showNotification('Error testing bot!', 'error');
-                logBotActivity(`Bot test error: ${error.message}`);
+                showNotification('Բոտի փորձարկման սխալ', 'error');
+                logBotActivity(`Բոտի փորձարկման սխալ ${error.message}`);
                 
                 const testBtn = document.querySelector('button[onclick="testTelegramBot()"]');
                 testBtn.textContent = 'Test Bot';
@@ -2495,25 +2495,25 @@
         // Enhanced webhook setup
         async function setupWebhook() {
             if (!checkPermission('settings', 'edit')) {
-                showNotification('You do not have permission to setup webhook!', 'error');
+                showNotification('Դուք չունեք Webhook տեղադրելու թույլտվություն։', 'error');
                 return;
             }
 
             const botConfig = JSON.parse(localStorage.getItem('telegram_bot_config') || '{}');
             
             if (!botConfig.token) {
-                showNotification('Please import bot API first!', 'error');
+                showNotification('Խնդրում ենք նախ ներմուծել Bot-ի API-ն։', 'error');
                 return;
             }
             
             // In a real application, you would configure the actual webhook URL
-            const webhookUrl = prompt('Enter your webhook URL (leave empty for polling mode):');
+            const webhookUrl = prompt('Մուտքագրեք ձեր Webhook-ի URL-ն (թողեք դատարկ հարցման ռեժիմի համար):');
             
             if (webhookUrl !== null) {
                 try {
                     const webhookBtn = document.querySelector('button[onclick="setupWebhook()"]');
                     const originalText = webhookBtn.textContent;
-                    webhookBtn.textContent = 'Setting up...';
+                    webhookBtn.textContent = 'Կարգավորվում է...';
                     webhookBtn.disabled = true;
                     
                     const response = await fetch(`https://api.telegram.org/bot${botConfig.token}/setWebhook`, {
@@ -2527,26 +2527,26 @@
                     const data = await response.json();
                     if (data.ok) {
                         if (webhookUrl) {
-                            showNotification('Webhook configured successfully!', 'success');
-                            logBotActivity(`Webhook set to: ${webhookUrl}`);
+                            showNotification('Webhook-ը հաջողությամբ կարգավորվեց։', 'success');
+                            logBotActivity(`Webhook-ը ը սահմանված է ${webhookUrl}`);
                         } else {
-                            showNotification('Webhook removed - using polling mode', 'success');
-                            logBotActivity('Webhook removed - using polling mode');
+                            showNotification('Webhook-ը հեռացվել է, օգտագործվում է հարցման ռեժիմը', 'success');
+                            logBotActivity('Webhook-ը հեռացվել է, օգտագործվում է հարցման ռեժիմը');
                         }
                     } else {
-                        showNotification(`Webhook error: ${data.description}`, 'error');
-                        logBotActivity(`Webhook error: ${data.description}`);
+                        showNotification(`Webhook-ի սխալ ${data.description}`, 'error');
+                        logBotActivity(`Webhook-ի սխալ ${data.description}`);
                     }
                     
                     webhookBtn.textContent = originalText;
                     webhookBtn.disabled = false;
                     
                 } catch (error) {
-                    showNotification('Error setting up webhook!', 'error');
-                    logBotActivity(`Webhook setup error: ${error.message}`);
+                    showNotification('Սխալ առաջացավ Webhook-ը կարգավորելիս։!', 'error');
+                    logBotActivity(`Webhook-ի կարգավորման սխալ ${error.message}`);
                     
                     const webhookBtn = document.querySelector('button[onclick="setupWebhook()"]');
-                    webhookBtn.textContent = 'Setup Webhook';
+                    webhookBtn.textContent = 'Կարգավորեք Webhook-ը';
                     webhookBtn.disabled = false;
                 }
             }
@@ -2560,10 +2560,10 @@
                 try {
                     // Remove webhook
                     await fetch(`https://api.telegram.org/bot${botConfig.token}/deleteWebhook`);
-                    logBotActivity('Bot disconnected and webhook removed');
+                    logBotActivity('Բոտը անջատված է և Webhook-ը հեռացված է');
                 } catch (error) {
-                    console.error('Error removing webhook:', error);
-                    logBotActivity(`Error removing webhook: ${error.message}`);
+                    console.error('Սխալ առաջացավ  Webhook-ը հեռացնելիս', error);
+                    logBotActivity(`Սխալ առաջացավ  Webhook-ը հեռացնելիս ${error.message}`);
                 }
             }
             
@@ -2573,15 +2573,15 @@
             // Reset UI
             document.getElementById('botToken').value = '';
             document.getElementById('botUsername').value = '';
-            document.getElementById('botStatus').textContent = 'Not Connected';
+            document.getElementById('botStatus').textContent = 'Միացված չէ';
             document.getElementById('botStatus').className = 'status-badge status-pending';
             document.getElementById('botConfigPanel').style.display = 'none';
-            document.getElementById('activityLogContainer').innerHTML = '<p style="color: var(--text-secondary);">No activity yet...</p>';
+            document.getElementById('activityLogContainer').innerHTML = '<p style="color: var(--text-secondary);">Դեռևս ակտիվություն չկա...</p>';
             
             botConnected = false;
             botInfo = null;
             
-            showNotification('Bot disconnected successfully!', 'success');
+            showNotification('Bot-ը հաջողությամբ անջատվեց։', 'success');
         }
 
         // Load bot configuration on page load
@@ -2592,7 +2592,7 @@
                 if (botConfig.connected && botConfig.token) {
                     document.getElementById('botToken').value = botConfig.token;
                     document.getElementById('botUsername').value = `@${botConfig.username}`;
-                    document.getElementById('botStatus').textContent = 'Connected';
+                    document.getElementById('botStatus').textContent = 'Միացված է';
                     document.getElementById('botStatus').className = 'status-badge status-active';
                     document.getElementById('botConfigPanel').style.display = 'block';
                     
@@ -2605,7 +2605,7 @@
                     logBotActivity(`Bot session restored: ${botConfig.firstName} (@${botConfig.username})`);
                 }
             } catch (error) {
-                console.error('Error loading bot configuration:', error);
+                console.error('Սխալ առաջացավ Bot-ի կարգավորումները բեռնելիս։', error);
             }
         }
 
@@ -2627,7 +2627,7 @@
                 const price = parseFloat(document.getElementById('servicePrice').value);
                 
                 if (!name || duration <= 0 || price < 0) {
-                    showNotification('Please fill in all required fields correctly!', 'error');
+                    showNotification('Խնդրում ենք ճիշտ լրացնել բոլոր պարտադիր դաշտերը։', 'error');
                     return;
                 }
                 
@@ -2636,18 +2636,18 @@
                 try {
                     if (currentEditingId) {
                         dataManager.updateService(currentEditingId, service);
-                        showNotification('Service updated successfully!', 'success');
+                        showNotification('Ծառայությունը հաջողությամբ թարմացվեց', 'success');
                     } else {
                         dataManager.addService(service);
-                        showNotification('Service added successfully!', 'success');
+                        showNotification('Ծառայությունը հաջողությամբ ավելացվեց', 'success');
                     }
                     
                     closeModal('serviceModal');
                     loadServices();
                     loadDashboardData();
                 } catch (error) {
-                    console.error('Error saving service:', error);
-                    showNotification('Error saving service!', 'error');
+                    console.error('Սխալ առաջացավ ծառայության պահպանման ժամանակ։', error);
+                    showNotification('Սխալ առաջացավ ծառայության պահպանման ժամանակ։', 'error');
                 }
             });
 
@@ -2661,7 +2661,7 @@
                 const bonuses = parseInt(document.getElementById('userBonuses').value) || 0;
                 
                 if (!name || !phone) {
-                    showNotification('Please fill in all required fields!', 'error');
+                    showNotification('Խնդրում ենք լրացնել բոլոր պարտադիր դաշտերը', 'error');
                     return;
                 }
                 
@@ -2670,18 +2670,18 @@
                 try {
                     if (currentEditingId) {
                         dataManager.updateUser(currentEditingId, user);
-                        showNotification('User updated successfully!', 'success');
+                        showNotification('Օգտատերը հաջողությամբ թարմացվեց', 'success');
                     } else {
                         dataManager.addUser(user);
-                        showNotification('User added successfully!', 'success');
+                        showNotification('Օգտատերը հաջողությամբ ավելացվեց', 'success');
                     }
                     
                     closeModal('userModal');
                     loadUsers();
                     loadDashboardData();
                 } catch (error) {
-                    console.error('Error saving user:', error);
-                    showNotification('Error saving user!', 'error');
+                    console.error('Սխալ առաջացավ օգտատիրոջը պահպանելիս', error);
+                    showNotification('Սխալ առաջացավ օգտատիրոջը պահպանելիս', 'error');
                 }
             });
 
@@ -2699,10 +2699,10 @@
                     dataManager.blockUser(currentEditingId, blockData);
                     closeModal('blockUserModal');
                     loadUsers();
-                    showNotification('User blocked successfully!', 'success');
+                    showNotification('Օգտատերը հաջողությամբ արգելափակվեց', 'success');
                 } catch (error) {
-                    console.error('Error blocking user:', error);
-                    showNotification('Error blocking user!', 'error');
+                    console.error('Սխալ առաջացավ օգտատիրոջը արգելափակելիս', error);
+                    showNotification('Սխալ առաջացավ օգտատիրոջը արգելափակելիս', 'error');
                 }
             });
 
@@ -2715,12 +2715,12 @@
                 const password = document.getElementById('moderatorPassword').value;
                 
                 if (!name || !phone || !password) {
-                    showNotification('Please fill in all required fields!', 'error');
+                    showNotification('Խնդրում ենք լրացնել բոլոր պարտադիր դաշտերը', 'error');
                     return;
                 }
                 
                 if (password.length < 6) {
-                    showNotification('Password must be at least 6 characters!', 'error');
+                    showNotification('Գաղտնաբառը պետք է լինի առնվազն 6 նիշ', 'error');
                     return;
                 }
                 
@@ -2742,20 +2742,20 @@
                         const index = data.moderators.findIndex(m => m.id === currentEditingId);
                         if (index !== -1) {
                             data.moderators[index] = { ...data.moderators[index], ...moderator };
-                            showNotification('Moderator updated successfully!', 'success');
+                            showNotification('Մոդերատորը հաջողությամբ թարմացվեց', 'success');
                         }
                     } else {
                         // Add new moderator
                         data.moderators.push(moderator);
-                        showNotification('Moderator added successfully!', 'success');
+                        showNotification('Մոդերատորը հաջողությամբ ավելացվեց', 'success');
                     }
                     
                     dataManager.saveData(data);
                     closeModal('moderatorModal');
                     loadModerators();
                 } catch (error) {
-                    console.error('Error saving moderator:', error);
-                    showNotification('Error saving moderator!', 'error');
+                    console.error('Մոդերատորի պահպանման սխալ', error);
+                    showNotification('Մոդերատորի պահպանման սխալ', 'error');
                 }
             });
 
@@ -2843,14 +2843,14 @@
 
         // Error handling for uncaught errors
         window.addEventListener('error', function(e) {
-            console.error('Uncaught error:', e.error);
-            showNotification('An unexpected error occurred!', 'error');
+            console.error('Չբացահայտված սխալ', e.error);
+            showNotification('Անսպասելի սխալ տեղի ունեցավ', 'error');
         });
 
         // Handle unhandled promise rejections
         window.addEventListener('unhandledrejection', function(e) {
-            console.error('Unhandled promise rejection:', e.reason);
-            showNotification('An unexpected error occurred!', 'error');
+            console.error('Չմշակված խոստման մերժում', e.reason);
+            showNotification('Անսպասելի սխալ տեղի ունեցավ', 'error');
         });
     </script>
 </body>
